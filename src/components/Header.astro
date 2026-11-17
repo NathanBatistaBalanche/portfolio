@@ -1,0 +1,556 @@
+---
+/**
+ * src/components/Header.astro
+ * Header du portfolio : barre flottante en verre dépoli, rétrécit au scroll,
+ * barre de progression de lecture, menu burger animé sur mobile.
+ */
+import logoUrl from "./public/icons/logo.svg?url";
+import downloadUrl from "./public/icons/download.svg?url";
+
+const links = [
+  { label: "Accueil", href: "/" },
+  { label: "Projets", href: "/projets" },
+  { label: "À propos", href: "/a-propos" },
+  { label: "Parcours", href: "/parcours" },
+  { label: "Contact", href: "/contact" },
+];
+
+// CV placé dans /public
+const cv = { label: "Mon CV", href: "/cv-nathan-batista-balanche.pdf" };
+
+const pathname = Astro.url.pathname.replace(/\/$/, "") || "/";
+const isActive = (href: string) =>
+  href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(href + "/");
+---
+
+<header id="site-header" data-scrolled="false" class="sticky top-0 z-50 w-full">
+  <div class="shell relative w-full overflow-hidden border-b border-white/10 bg-nuit backdrop-blur-xl">
+    <!-- Décor : lueurs, grille, filet lumineux -->
+    <div aria-hidden="true" class="pointer-events-none absolute inset-0">
+      <div class="orb absolute -top-24 left-[4%] h-56 w-56 rounded-full bg-soleil/25 blur-3xl"></div>
+      <div class="orb orb-reverse absolute -bottom-28 right-[6%] h-64 w-64 rounded-full bg-azur/35 blur-3xl"></div>
+      <div class="grid-bg absolute inset-0"></div>
+      <div class="absolute inset-x-[15%] top-0 h-px bg-linear-to-r from-transparent via-soleil/70 to-transparent"></div>
+    </div>
+
+    <!-- Progression de lecture -->
+    <div aria-hidden="true" class="absolute inset-x-0 bottom-0 h-0.5 bg-white/5">
+      <div id="scroll-progress" class="h-full w-full origin-left bg-linear-to-r from-soleil via-safran to-cuivre" style="transform: scaleX(0)"></div>
+    </div>
+
+    <!-- Conteneur : aligne le contenu du header avec celui de la page -->
+    <div class="relative mx-auto w-full max-w-7xl px-5 sm:px-8">
+    <div class="inner flex items-center justify-between gap-4">
+      <!-- Logo + identité -->
+      <a href="/" class="logo group flex min-w-0 items-center gap-3">
+        <span class="relative shrink-0">
+          <span class="logo-glow absolute inset-0 rounded-full bg-soleil/50 blur-xl"></span>
+          <img src={logoUrl} alt="" decoding="async" class="logo-img relative w-auto" />
+        </span>
+        <span class="flex min-w-0 flex-col leading-tight">
+          <span class="font-outfit text-[0.95rem] font-bold text-neige sm:text-xl">Nathan Batista Balanche</span>
+          <span class="font-inter text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-miel sm:text-xs">Développeur web</span>
+        </span>
+      </a>
+
+      <!-- Navigation desktop -->
+      <div class="hidden items-center gap-4 lg:flex">
+        <nav aria-label="Navigation principale">
+          <ul class="flex items-center gap-1">
+            {
+              links.map(({ label, href }, i) => (
+                <li class="nav-item" style={`--i:${i}`}>
+                  <a
+                    href={href}
+                    class:list={["nav-link", { "is-active": isActive(href) }]}
+                    aria-current={isActive(href) ? "page" : undefined}
+                  >
+                    {label}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </nav>
+
+        <a href={cv.href} download="CV-Nathan-Batista-Balanche.pdf" class="cv-btn nav-item" style="--i:5">
+          <span>{cv.label}</span>
+          <img src={downloadUrl} alt="" width="20" height="20" class="cv-icon h-5 w-5" />
+        </a>
+      </div>
+
+      <!-- Burger (mobile / tablette) -->
+      <button
+        id="menu-toggle"
+        type="button"
+        class="burger relative inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-neige transition-colors hover:border-soleil/60 lg:hidden"
+        aria-expanded="false"
+        aria-controls="mobile-menu"
+        aria-label="Ouvrir le menu"
+      >
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+
+    <!-- Menu mobile -->
+    <nav id="mobile-menu" data-open="false" inert aria-label="Navigation mobile" class="menu relative lg:hidden">
+      <div class="menu-inner">
+        <div class="h-px bg-linear-to-r from-transparent via-white/20 to-transparent"></div>
+        <ul class="flex flex-col gap-1 pb-2 pt-3">
+          {
+            links.map(({ label, href }, i) => (
+              <li class="m-item" style={`--i:${i}`}>
+                <a
+                  href={href}
+                  class:list={["m-link", { "is-active": isActive(href) }]}
+                  aria-current={isActive(href) ? "page" : undefined}
+                >
+                  <span>{label}</span>
+                  <span aria-hidden="true" class="m-arrow">→</span>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+        <div class="m-item pb-4" style="--i:5">
+          <a href={cv.href} download="CV-Nathan-Batista-Balanche.pdf" class="cv-btn w-full justify-center">
+            <span>{cv.label}</span>
+            <img src={downloadUrl} alt="" width="20" height="20" class="cv-icon h-5 w-5" />
+          </a>
+        </div>
+      </div>
+    </nav>
+    </div>
+  </div>
+</header>
+
+<style>
+  /* ---------- Coque ---------- */
+  .shell {
+    transition:
+      background-color 0.5s ease,
+      border-color 0.5s ease,
+      box-shadow 0.5s ease;
+    animation: header-enter 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .inner {
+    padding-block: 0.75rem;
+    transition: padding 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  #site-header[data-scrolled="true"] .shell {
+    background-color: color-mix(in srgb, var(--color-nuit) 92%, transparent);
+    border-color: rgb(255 255 255 / 0.14);
+    box-shadow: 0 14px 34px -18px rgb(0 0 0 / 0.8);
+  }
+
+  #site-header[data-scrolled="true"] .inner {
+    padding-block: 0.4rem;
+  }
+
+  /* ---------- Décor ---------- */
+  .grid-bg {
+    background-image:
+      linear-gradient(to right, rgb(255 255 255 / 0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(255 255 255 / 0.05) 1px, transparent 1px);
+    background-size: 28px 28px;
+    mask-image: radial-gradient(ellipse at center, #000 25%, transparent 75%);
+  }
+
+  .orb {
+    animation: drift 14s ease-in-out infinite;
+  }
+  .orb-reverse {
+    animation-direction: reverse;
+    animation-delay: -7s;
+  }
+
+  /* ---------- Logo ---------- */
+  .logo-img {
+    height: 2.5rem;
+    transition:
+      height 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  @media (min-width: 640px) {
+    .logo-img {
+      height: 3rem;
+    }
+  }
+  #site-header[data-scrolled="true"] .logo-img {
+    height: 2.25rem;
+  }
+
+  .logo-glow {
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+  .logo:hover .logo-glow,
+  .logo:focus-visible .logo-glow {
+    opacity: 1;
+  }
+  .logo:hover .logo-img,
+  .logo:focus-visible .logo-img {
+    transform: rotate(-6deg) scale(1.1);
+  }
+  .logo:focus-visible {
+    outline: 2px solid var(--color-soleil);
+    outline-offset: 6px;
+    border-radius: 0.75rem;
+  }
+
+  /* ---------- Liens desktop ---------- */
+  .nav-item {
+    animation: fade-down 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: calc(var(--i) * 70ms + 300ms);
+  }
+
+  .nav-link {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    padding: 0.6rem 1rem;
+    border-radius: 0.75rem;
+    font-family: var(--font-inter);
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--color-neige);
+    transition: color 0.3s ease;
+  }
+
+  /* halo au survol */
+  .nav-link::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(
+      120% 150% at 50% 130%,
+      color-mix(in srgb, var(--color-soleil) 24%, transparent),
+      transparent 70%
+    );
+    opacity: 0;
+    transform: scale(0.9);
+    transition:
+      opacity 0.35s ease,
+      transform 0.35s ease;
+  }
+
+  /* soulignement qui se dessine */
+  .nav-link::after {
+    content: "";
+    position: absolute;
+    left: 1rem;
+    right: 1rem;
+    bottom: 0.3rem;
+    height: 2px;
+    border-radius: 2px;
+    background: linear-gradient(90deg, var(--color-soleil), var(--color-safran));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .nav-link:hover,
+  .nav-link:focus-visible {
+    color: var(--color-miel);
+  }
+  .nav-link:hover::before,
+  .nav-link:focus-visible::before {
+    opacity: 1;
+    transform: scale(1);
+  }
+  .nav-link:hover::after,
+  .nav-link:focus-visible::after {
+    transform: scaleX(1);
+  }
+  .nav-link:focus-visible {
+    outline: 2px solid var(--color-soleil);
+    outline-offset: 2px;
+  }
+
+  .nav-link.is-active {
+    color: var(--color-soleil);
+  }
+  .nav-link.is-active::after {
+    transform: scaleX(1);
+    box-shadow: 0 0 14px color-mix(in srgb, var(--color-soleil) 80%, transparent);
+  }
+
+  /* ---------- Bouton CV ---------- */
+  .cv-btn {
+    position: relative;
+    isolation: isolate;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    overflow: hidden;
+    padding: 0.75rem 1.4rem;
+    border-radius: 0.85rem;
+    font-family: var(--font-outfit);
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--color-encre);
+    background: linear-gradient(
+      135deg,
+      var(--color-miel) 0%,
+      var(--color-soleil) 45%,
+      var(--color-safran) 100%
+    );
+    box-shadow:
+      inset 0 0 0 1px rgb(255 255 255 / 0.3),
+      0 8px 24px -8px color-mix(in srgb, var(--color-soleil) 70%, transparent);
+    transition:
+      transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 0.3s ease;
+  }
+
+  .cv-btn > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* reflet qui traverse le bouton */
+  .cv-btn::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 0;
+    width: 45%;
+    background: linear-gradient(100deg, transparent, rgb(255 255 255 / 0.75), transparent);
+    transform: translateX(-220%) skewX(-20deg);
+    transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .cv-btn:hover,
+  .cv-btn:focus-visible {
+    transform: translateY(-2px);
+    box-shadow:
+      inset 0 0 0 1px rgb(255 255 255 / 0.45),
+      0 14px 34px -8px color-mix(in srgb, var(--color-soleil) 90%, transparent);
+  }
+  .cv-btn:hover::before,
+  .cv-btn:focus-visible::before {
+    transform: translateX(480%) skewX(-20deg);
+  }
+  .cv-btn:active {
+    transform: translateY(0) scale(0.98);
+  }
+  .cv-btn:focus-visible {
+    outline: 2px solid var(--color-miel);
+    outline-offset: 3px;
+  }
+
+  .cv-btn:hover .cv-icon,
+  .cv-btn:focus-visible .cv-icon {
+    animation: download-bounce 0.9s ease-in-out infinite;
+  }
+
+  /* ---------- Burger ---------- */
+  .burger span {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 20px;
+    height: 2px;
+    margin-left: -10px;
+    margin-top: -1px;
+    border-radius: 2px;
+    background: currentColor;
+    transition:
+      transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 0.25s ease;
+  }
+  .burger span:nth-child(1) {
+    transform: translateY(-6px);
+  }
+  .burger span:nth-child(3) {
+    transform: translateY(6px);
+  }
+  .burger[aria-expanded="true"] span:nth-child(1) {
+    transform: rotate(45deg);
+  }
+  .burger[aria-expanded="true"] span:nth-child(2) {
+    opacity: 0;
+    transform: scaleX(0);
+  }
+  .burger[aria-expanded="true"] span:nth-child(3) {
+    transform: rotate(-45deg);
+  }
+  .burger:focus-visible {
+    outline: 2px solid var(--color-soleil);
+    outline-offset: 2px;
+  }
+
+  /* ---------- Menu mobile ---------- */
+  .menu {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .menu[data-open="true"] {
+    grid-template-rows: 1fr;
+  }
+  .menu-inner {
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .m-item {
+    opacity: 0;
+    transform: translateY(-8px);
+    transition:
+      opacity 0.4s ease,
+      transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .menu[data-open="true"] .m-item {
+    opacity: 1;
+    transform: none;
+    transition-delay: calc(var(--i) * 55ms + 120ms);
+  }
+
+  .m-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.85rem 1rem;
+    border-radius: 0.75rem;
+    font-family: var(--font-outfit);
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--color-neige);
+    transition:
+      background-color 0.3s ease,
+      color 0.3s ease;
+  }
+  .m-arrow {
+    color: var(--color-soleil);
+    opacity: 0;
+    transform: translateX(-6px);
+    transition:
+      opacity 0.3s ease,
+      transform 0.3s ease;
+  }
+  .m-link:hover,
+  .m-link:focus-visible {
+    background-color: rgb(255 255 255 / 0.06);
+    color: var(--color-miel);
+  }
+  .m-link:hover .m-arrow,
+  .m-link:focus-visible .m-arrow,
+  .m-link.is-active .m-arrow {
+    opacity: 1;
+    transform: none;
+  }
+  .m-link.is-active {
+    color: var(--color-soleil);
+    background-color: color-mix(in srgb, var(--color-soleil) 10%, transparent);
+  }
+  .m-link:focus-visible {
+    outline: 2px solid var(--color-soleil);
+    outline-offset: -2px;
+  }
+
+  /* ---------- Animations ---------- */
+  @keyframes header-enter {
+    from {
+      opacity: 0;
+      transform: translateY(-28px);
+    }
+  }
+  @keyframes fade-down {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+  }
+  @keyframes drift {
+    0%,
+    100% {
+      transform: translate3d(0, 0, 0);
+    }
+    50% {
+      transform: translate3d(36px, 12px, 0);
+    }
+  }
+  @keyframes download-bounce {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(3px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation: none !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+</style>
+
+<script>
+  const header = document.getElementById("site-header");
+  const progress = document.getElementById("scroll-progress");
+  const toggle = document.getElementById("menu-toggle");
+  const menu = document.getElementById("mobile-menu");
+
+  // Rétrécissement au scroll + barre de progression
+  if (header && progress) {
+    let ticking = false;
+
+    const update = () => {
+      const y = window.scrollY;
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      header.dataset.scrolled = String(y > 24);
+      progress.style.transform = `scaleX(${max > 0 ? Math.min(y / max, 1) : 0})`;
+      ticking = false;
+    };
+
+    window.addEventListener(
+      "scroll",
+      () => {
+        if (!ticking) {
+          ticking = true;
+          requestAnimationFrame(update);
+        }
+      },
+      { passive: true },
+    );
+    window.addEventListener("resize", update);
+    update();
+  }
+
+  // Menu mobile
+  if (toggle && menu) {
+    const setOpen = (open: boolean) => {
+      menu.dataset.open = String(open);
+      menu.toggleAttribute("inert", !open);
+      toggle.setAttribute("aria-expanded", String(open));
+      toggle.setAttribute("aria-label", open ? "Fermer le menu" : "Ouvrir le menu");
+    };
+
+    toggle.addEventListener("click", () => {
+      setOpen(toggle.getAttribute("aria-expanded") !== "true");
+    });
+
+    menu.querySelectorAll("a").forEach((a) => a.addEventListener("click", () => setOpen(false)));
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") setOpen(false);
+    });
+
+    window.matchMedia("(min-width: 1024px)").addEventListener("change", (e) => {
+      if (e.matches) setOpen(false);
+    });
+  }
+</script>
