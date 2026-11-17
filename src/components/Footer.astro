@@ -1,0 +1,436 @@
+---
+/**
+ * src/components/Footer.astro
+ * Footer du portfolio : appel à me contacter, colonnes Explorer / Contact,
+ * mentions légales, retour en haut. Apparition douce au scroll.
+ */
+import logoUrl from "./public/icons/logo.svg?url";
+
+const year = new Date().getFullYear();
+
+const explore = [
+  { label: "Projets", href: "/projets" },
+  { label: "Parcours", href: "/parcours" },
+  { label: "CV", href: "/cv-nathan-batista-balanche.pdf", download: "CV-Nathan-Batista-Balanche.pdf" },
+  { label: "À propos", href: "/a-propos" },
+];
+
+const email = "batistabalanchenathan@gmail.com";
+const phone = { label: "+33 6 84 91 87 83", href: "tel:+33684918783" };
+
+// TODO : remplace les "#" par tes vrais liens de profil
+const socials = [
+  { label: "LinkedIn", href: "https://www.linkedin.com/in/nathan-batista-balanche-349916337/" },
+  { label: "GitHub", href: "https://github.com/NathanBatistaBalanche" },
+  { label: "Behance", href: "https://www.behance.net/nathanbatista7" },
+];
+
+const legal = [
+  { label: "Mentions légales", href: "/mentions-legales" },
+  { label: "Politique de confidentialité", href: "/politique-de-confidentialite" },
+];
+---
+
+<footer id="site-footer" class="footer relative isolate overflow-hidden bg-encre text-neige">
+  <!-- Décor : lueurs, grille, filet lumineux -->
+  <div aria-hidden="true" class="pointer-events-none absolute inset-0 -z-10">
+    <div class="f-orb absolute -left-24 top-10 h-72 w-72 rounded-full bg-soleil/10 blur-3xl"></div>
+    <div class="f-orb f-orb-reverse absolute -right-24 bottom-0 h-80 w-80 rounded-full bg-azur/20 blur-3xl"></div>
+    <div class="f-grid absolute inset-0"></div>
+    <div class="absolute inset-x-[10%] top-0 h-px bg-linear-to-r from-transparent via-soleil/60 to-transparent"></div>
+  </div>
+
+  <div class="mx-auto w-full max-w-7xl px-5 sm:px-8">
+    <!-- Appel à me contacter -->
+    <section
+      aria-labelledby="footer-cta"
+      class="flex flex-col items-start gap-8 py-16 sm:py-20 md:flex-row md:items-center md:justify-between md:gap-12"
+    >
+      <div class="max-w-3xl" data-reveal>
+        <h2 id="footer-cta" class="font-outfit text-4xl font-bold leading-[1.1] tracking-tight sm:text-5xl lg:text-6xl">
+          Besoin de me <span class="text-soleil">contacter</span> ?
+        </h2>
+        <p class="mt-5 text-base text-neige/80 sm:text-lg">
+          Une question, une remarque ou simplement envie d’échanger ? Ma boîte mail est ouverte.
+        </p>
+      </div>
+
+      <div class="shrink-0" data-reveal style="--d:120ms">
+        <a href="/contact" class="cta">
+          <span>Me contacter</span>
+          <svg
+            class="cta-icon"
+            width="22"
+            height="22"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <line x1="22" y1="2" x2="11" y2="13"></line>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+          </svg>
+        </a>
+      </div>
+    </section>
+
+    <div class="h-px bg-linear-to-r from-white/5 via-white/25 to-white/5"></div>
+
+    <!-- Identité + colonnes -->
+    <div class="grid gap-12 py-14 lg:grid-cols-[1fr_auto] lg:gap-24">
+      <div class="flex flex-col gap-5" data-reveal>
+        <a href="/" class="f-logo inline-flex w-fit items-center gap-3" aria-label="Nathan Batista Balanche, retour à l'accueil">
+          <img src={logoUrl} alt="" decoding="async" loading="lazy" class="f-logo-img h-12 w-auto" />
+          <span class="flex flex-col leading-tight">
+            <span class="font-outfit text-xl font-bold text-neige">Nathan Batista Balanche</span>
+            <span class="font-inter text-xs font-semibold uppercase tracking-[0.18em] text-miel">Développeur web</span>
+          </span>
+        </a>
+        <p class="text-neige/70">France · Montbéliard</p>
+      </div>
+
+      <div class="grid grid-cols-1 gap-x-20 gap-y-10 sm:grid-cols-2" data-reveal style="--d:100ms">
+        <nav aria-labelledby="footer-explore">
+          <h3 id="footer-explore" class="f-title">Explorer</h3>
+          <ul class="mt-5 flex flex-col gap-3.5">
+            {
+              explore.map((item) => (
+                <li>
+                  <a href={item.href} download={item.download} class="f-link">
+                    {item.label}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </nav>
+
+        <div>
+          <h3 class="f-title">Contact</h3>
+          <ul class="mt-5 flex flex-col gap-3.5">
+            <li>
+              <a href={`mailto:${email}`} class="f-link break-all">{email}</a>
+            </li>
+            <li>
+              <a href={phone.href} class="f-link">{phone.label}</a>
+            </li>
+            <li class="flex flex-wrap items-center gap-x-2">
+              {
+                socials.map((item, i) => (
+                  <>
+                    {i > 0 && (
+                      <span aria-hidden="true" class="text-neige/40">
+                        ·
+                      </span>
+                    )}
+                    <a href={item.href} target="_blank" rel="noopener noreferrer" class="f-link">
+                      {item.label}
+                    </a>
+                  </>
+                ))
+              }
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bas de page -->
+    <div
+      class="flex flex-col gap-5 pb-8 pt-2 text-sm text-neige/55 sm:flex-row sm:items-center sm:justify-between"
+      data-reveal
+    >
+      <p>© {year} Nathan Batista Balanche — Portfolio</p>
+
+      <div class="flex items-center justify-between gap-6 sm:justify-end">
+        <nav aria-label="Informations légales" class="flex flex-wrap items-center gap-x-2">
+          {
+            legal.map((item, i) => (
+              <>
+                {i > 0 && <span aria-hidden="true">·</span>}
+                <a href={item.href} class="f-link f-link-muted">
+                  {item.label}
+                </a>
+              </>
+            ))
+          }
+        </nav>
+
+        <button id="back-to-top" type="button" class="to-top" aria-label="Revenir en haut de la page">
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path d="m5 12 7-7 7 7"></path>
+            <path d="M12 19V5"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<style>
+  /* ---------- Décor ---------- */
+  .f-grid {
+    background-image:
+      linear-gradient(to right, rgb(255 255 255 / 0.035) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(255 255 255 / 0.035) 1px, transparent 1px);
+    background-size: 36px 36px;
+    mask-image: radial-gradient(ellipse at 50% 0%, #000 10%, transparent 70%);
+  }
+
+  .f-orb {
+    animation: f-drift 16s ease-in-out infinite;
+  }
+  .f-orb-reverse {
+    animation-direction: reverse;
+    animation-delay: -8s;
+  }
+
+  /* ---------- Apparition au scroll (activée par le script) ---------- */
+  .footer.reveal-ready [data-reveal] {
+    opacity: 0;
+    transform: translateY(26px);
+    transition:
+      opacity 0.8s ease,
+      transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+    transition-delay: var(--d, 0ms);
+  }
+  .footer.reveal-ready [data-reveal].is-visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* ---------- Logo ---------- */
+  .f-logo-img {
+    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .f-logo:hover .f-logo-img,
+  .f-logo:focus-visible .f-logo-img {
+    transform: rotate(-6deg) scale(1.1);
+  }
+  .f-logo:focus-visible {
+    outline: 2px solid var(--color-soleil);
+    outline-offset: 6px;
+    border-radius: 0.75rem;
+  }
+
+  /* ---------- Titres de colonnes ---------- */
+  .f-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-family: var(--font-inter);
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-soleil);
+  }
+  .f-title::before {
+    content: "";
+    width: 1.1rem;
+    height: 2px;
+    border-radius: 2px;
+    background: linear-gradient(90deg, var(--color-soleil), var(--color-cuivre));
+  }
+
+  /* ---------- Liens ---------- */
+  .f-link {
+    position: relative;
+    display: inline-block;
+    color: rgb(242 242 242 / 0.82);
+    transition:
+      color 0.3s ease,
+      transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .f-link::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -2px;
+    height: 1px;
+    background: linear-gradient(90deg, var(--color-soleil), var(--color-safran));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .f-link:hover,
+  .f-link:focus-visible {
+    color: var(--color-miel);
+    transform: translateX(3px);
+  }
+  .f-link:hover::after,
+  .f-link:focus-visible::after {
+    transform: scaleX(1);
+  }
+  .f-link:focus-visible {
+    outline: 2px solid var(--color-soleil);
+    outline-offset: 4px;
+    border-radius: 0.25rem;
+  }
+  .f-link-muted {
+    color: rgb(242 242 242 / 0.55);
+  }
+
+  /* ---------- Bouton « Me contacter » ---------- */
+  .cta {
+    position: relative;
+    isolation: isolate;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    overflow: hidden;
+    padding: 1rem 1.8rem;
+    border-radius: 1rem;
+    font-family: var(--font-outfit);
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--color-encre);
+    background: linear-gradient(
+      135deg,
+      var(--color-miel) 0%,
+      var(--color-soleil) 45%,
+      var(--color-safran) 100%
+    );
+    box-shadow:
+      inset 0 0 0 1px rgb(255 255 255 / 0.3),
+      0 10px 30px -10px color-mix(in srgb, var(--color-soleil) 60%, transparent);
+    transition:
+      transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 0.3s ease;
+  }
+  .cta > * {
+    position: relative;
+    z-index: 1;
+  }
+  .cta::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 0;
+    width: 45%;
+    background: linear-gradient(100deg, transparent, rgb(255 255 255 / 0.75), transparent);
+    transform: translateX(-220%) skewX(-20deg);
+    transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .cta:hover,
+  .cta:focus-visible {
+    transform: translateY(-3px);
+    box-shadow:
+      inset 0 0 0 1px rgb(255 255 255 / 0.45),
+      0 16px 40px -10px color-mix(in srgb, var(--color-soleil) 85%, transparent);
+  }
+  .cta:hover::before,
+  .cta:focus-visible::before {
+    transform: translateX(480%) skewX(-20deg);
+  }
+  .cta:active {
+    transform: translateY(0) scale(0.98);
+  }
+  .cta:focus-visible {
+    outline: 2px solid var(--color-miel);
+    outline-offset: 4px;
+  }
+  .cta-icon {
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .cta:hover .cta-icon,
+  .cta:focus-visible .cta-icon {
+    transform: translate(3px, -3px);
+  }
+
+  /* ---------- Retour en haut ---------- */
+  .to-top {
+    display: inline-flex;
+    height: 2.5rem;
+    width: 2.5rem;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.75rem;
+    border: 1px solid rgb(255 255 255 / 0.15);
+    background: rgb(255 255 255 / 0.04);
+    color: var(--color-neige);
+    cursor: pointer;
+    transition:
+      transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+      background-color 0.3s ease,
+      color 0.3s ease,
+      border-color 0.3s ease;
+  }
+  .to-top:hover,
+  .to-top:focus-visible {
+    transform: translateY(-3px);
+    background: var(--color-soleil);
+    border-color: var(--color-soleil);
+    color: var(--color-encre);
+  }
+  .to-top:focus-visible {
+    outline: 2px solid var(--color-miel);
+    outline-offset: 3px;
+  }
+
+  /* ---------- Animations ---------- */
+  @keyframes f-drift {
+    0%,
+    100% {
+      transform: translate3d(0, 0, 0);
+    }
+    50% {
+      transform: translate3d(40px, -14px, 0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation: none !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+</style>
+
+<script>
+  const footer = document.getElementById("site-footer");
+  const backToTop = document.getElementById("back-to-top");
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  backToTop?.addEventListener("click", () => {
+    window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });
+  });
+
+  // Apparition au scroll : sans JS (ou animations réduites), tout reste visible.
+  if (footer && !reduceMotion && "IntersectionObserver" in window) {
+    footer.classList.add("reveal-ready");
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.15 },
+    );
+
+    footer.querySelectorAll("[data-reveal]").forEach((el) => observer.observe(el));
+  }
+</script>
