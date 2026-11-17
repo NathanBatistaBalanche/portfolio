@@ -1,0 +1,28 @@
+---
+/**
+ * src/components/Hexagon.astro
+ * Hexagone régulier « flat-top » (pointes à gauche/droite), sans marge interne
+ * pour pouvoir les emboîter en nid d'abeilles. Largeur via la classe (ex: w-24),
+ * la hauteur suit automatiquement (ratio 0,866).
+ */
+interface Props {
+  class?: string;
+  fill?: string; // ex: "var(--color-soleil)" ou "transparent"
+  stroke?: string; // ex: "var(--color-miel)"
+  strokeWidth?: number;
+}
+
+const { class: className, fill = "transparent", stroke = "none", strokeWidth = 3 } = Astro.props;
+---
+
+<svg
+  viewBox="0 0 100 86.6"
+  class:list={["overflow-visible", className]}
+  fill={fill}
+  stroke={stroke}
+  stroke-width={strokeWidth}
+  stroke-linejoin="round"
+  aria-hidden="true"
+>
+  <polygon points="25,0 75,0 100,43.3 75,86.6 25,86.6 0,43.3"></polygon>
+</svg>

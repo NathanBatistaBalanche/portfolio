@@ -1,10 +1,368 @@
 ---
-import Layout from '../layouts/Layout.astro';
+/**
+ * src/pages/index.astro
+ * Page d'accueil : Hero, À propos, Projets (statiques), Compétences, Parcours, CTA.
+ * Le Header et le Footer (avec « Besoin de me contacter ? ») sont dans le Layout.
+ *
+ * Icônes : /public/icons/*.svg — Images : /public/images/*
+ */
+import Layout from "../layouts/Layout.astro";
+import Hexagon from "../components/Hexagon.astro";
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const icon = (name: string) => `/icons/${name}.svg`;
+
+// ---------- Données statiques (à remplacer par la base de données plus tard) ----------
+const stats = [
+  { value: "01", label: "année en MMI", color: "text-soleil" },
+  { value: "03", label: "domaines complémentaires", color: "text-soleil" },
+  { value: "100 %", label: "curieux et impliqué", color: "text-miel" },
+];
+
+const qualities = ["Curiosité", "Esprit d’équipe", "Rigueur", "Culture numérique", "Envie d’apprendre"];
+
+const projects = [
+  {
+    slug: "ordaily",
+    type: "Projet de groupe",
+    title: "OrDaily",
+    tags: "UX/UI Design · Développement web · Accessibilité · Base de données",
+    image: "/images/projets/ordaily.webp",
+    alt: "Maquette de l’application OrDaily sur ordinateur et mobile",
+    card: "bg-miel text-encre",
+    label: "text-cuivre",
+    tagsColor: "text-encre/70",
+    dot: "bg-safran",
+  },
+  {
+    slug: "les-rives-du-territoire",
+    type: "Projet solo",
+    title: "Les Rives du Territoire",
+    tags: "Direction artistique · UI Design · Développement web · Intégration",
+    image: "/images/projets/les-rives-du-territoire.webp",
+    alt: "Site Les Rives du Territoire affiché sur un ordinateur portable",
+    card: "bg-nuit text-neige",
+    label: "text-miel",
+    tagsColor: "text-neige/70",
+    dot: "bg-soleil",
+  },
+  {
+    slug: "emminent",
+    type: "Projet de groupe",
+    title: "Emminent",
+    tags: "UX/UI Design · Intelligence artificielle · Conception produit · Prototypage",
+    image: "/images/projets/emminent.webp",
+    alt: "Interface Emminent, espace de travail avec chat intelligent",
+    card: "bg-white text-encre ring-1 ring-black/5",
+    label: "text-cuivre",
+    tagsColor: "text-graphite/70",
+    dot: "bg-soleil",
+  },
+];
+
+const skills = [
+  { icon: "pencil", title: "Création", text: "Direction artistique, UI, prototypage et narration visuelle." },
+  { icon: "code", title: "Développement web", text: "HTML, CSS, JavaScript, intégration responsive, accessibilité et déploiement." },
+  { icon: "communication", title: "Communication", text: "Stratégie de contenu, rédaction, présentation et narration." },
+  { icon: "movie", title: "Audiovisuel", text: "Préproduction, prise de vue, montage et motion design." },
+];
+
+const timeline = [
+  { year: "2024", title: "Entrée en MMI — découverte du développement web", text: "Découverte du développement web, du design d’interface, de la vidéo et de la communication." },
+  { year: "2025", title: "Premiers projets web complets", text: "Travail en équipe sur des sites web, des interfaces et des projets documentés." },
+  { year: "2026", title: "Affirmer une direction en développement web", text: "Approfondissement du développement web, de l’UI et de la communication. Recherche d’une première expérience." },
+];
+
+// Classes réutilisables
+const container = "mx-auto w-full max-w-7xl px-5 sm:px-8";
+const eyebrow = "flex items-center gap-2.5 font-inter text-xs font-bold text-safran";
+const btnBase =
+  "inline-flex items-center gap-3 rounded-xl px-5 py-3 font-outfit text-sm font-bold transition duration-300 hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-soleil";
+const btnYellow = `${btnBase} bg-soleil text-encre hover:bg-miel`;
+const btnOutline = `${btnBase} border border-white/40 text-neige hover:border-soleil hover:text-soleil`;
+const btnDark = `${btnBase} bg-nuit text-neige hover:bg-abysse`;
+const btnGhost = `${btnBase} border border-graphite/30 text-nuit hover:border-nuit hover:bg-nuit hover:text-neige`;
 ---
 
 <Layout>
-	<p></p>
+  <!-- ======================= HERO ======================= -->
+  <section class="relative overflow-hidden bg-nuit text-neige">
+    <div class={`${container} grid items-center gap-12 pb-20 pt-14 lg:grid-cols-2 lg:gap-8 lg:pb-28 lg:pt-20`}>
+      <div>
+        <p class="inline-flex items-center gap-2.5 rounded-full bg-abysse px-4 py-2 font-inter text-xs text-neige/90">
+          <span class="h-2.5 w-2.5 rounded-full bg-soleil"></span>
+          Disponible pour un stage, une alternance ou un premier emploi
+        </p>
+
+        <h1 class="mt-8 font-outfit text-5xl font-light leading-[1.05] tracking-tight sm:text-6xl lg:text-7xl">
+          Je conçois des expériences numériques avec du <span class="text-soleil">code.</span>
+        </h1>
+
+        <p class="mt-8 max-w-xl text-base leading-relaxed text-neige/85 sm:text-lg">
+          Étudiant en BUT MMI (Bachelor Universitaire de Technologie Métiers du Multimédia et de l’Internet), je m’oriente
+          vers le développement web tout en gardant une approche créative et narrative.
+        </p>
+
+        <div class="mt-8 flex flex-wrap gap-4">
+          <a href="/projets" class={btnYellow}>
+            Voir mes projets
+            <img src={icon("arrow_bottom")} alt="" width="16" height="16" class="h-4 w-4" />
+          </a>
+          <a href="/contact" class={btnOutline}>
+            Me contacter
+            <img src={icon("white_contact")} alt="" width="18" height="18" class="h-[18px] w-[18px]" />
+          </a>
+        </div>
+
+        <dl class="mt-12 grid max-w-xl grid-cols-3 gap-6">
+          {
+            stats.map((s) => (
+              <div>
+                <dt class={`font-outfit text-3xl font-bold sm:text-4xl ${s.color}`}>{s.value}</dt>
+                <dd class="mt-2 text-xs text-neige/80 sm:text-sm">{s.label}</dd>
+              </div>
+            ))
+          }
+        </dl>
+      </div>
+
+      <!-- Visuel -->
+      <div class="relative">
+        <div class="relative overflow-hidden rounded-[2rem] shadow-2xl shadow-black/40">
+          <img
+            src="/images/homepage_code.webp"
+            alt="Code affiché sur un écran d’ordinateur"
+            width="800"
+            height="640"
+            fetchpriority="high"
+            class="aspect-[5/4] w-full object-cover"
+          />
+          <div class="absolute inset-0 bg-linear-to-tr from-nuit/40 to-transparent"></div>
+        </div>
+
+        <div class="absolute -bottom-6 right-4 max-w-56 rounded-2xl bg-neige p-4 text-encre shadow-xl sm:right-6">
+          <p class="font-outfit text-sm font-bold">Concevoir · coder · déployer</p>
+          <p class="mt-1 text-xs text-graphite/70">Mon processus préféré, du premier croquis à la mise en ligne.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================= EN QUELQUES MOTS ======================= -->
+  <section class="bg-neige text-nuit">
+    <div class={`${container} grid gap-12 py-20 sm:py-28 lg:grid-cols-[1fr_2fr] lg:gap-16`}>
+      <div>
+        <p class="font-outfit text-7xl font-bold leading-none text-soleil sm:text-8xl">01.</p>
+
+        <!-- Nid d'abeilles : colonnes décalées de 0,75 × largeur, lignes de 0,5 × hauteur -->
+        <div class="relative mt-10 h-[10.4rem] w-60" aria-hidden="true">
+          <Hexagon class="absolute left-0 top-[2.6rem] w-24 scale-95" stroke="var(--color-nuit)" />
+          <Hexagon class="absolute left-18 top-0 w-24 scale-95" fill="var(--color-soleil)" />
+          <Hexagon class="absolute left-36 top-[2.6rem] w-24 scale-95" fill="var(--color-abysse)" />
+          <Hexagon class="absolute left-18 top-[5.2rem] w-24 scale-95" stroke="var(--color-nuit)" />
+        </div>
+      </div>
+
+      <div>
+        <p class={eyebrow}>
+          <span class="h-2.5 w-2.5 rounded-full bg-soleil"></span>
+          EN QUELQUES MOTS
+        </p>
+
+        <h2 class="mt-5 max-w-2xl font-outfit text-3xl font-bold leading-tight text-nuit sm:text-4xl lg:text-[2.6rem]">
+          Un profil MMI centré sur le développement web, avec une vision créative.
+        </h2>
+
+        <p class="mt-6 max-w-2xl leading-relaxed text-graphite/60">
+          En MMI, je consolide une base solide en développement web tout en gardant une approche créative et narrative.
+          Je cherche un environnement où apprendre, produire et améliorer des interfaces utiles, avec une vision claire
+          et documentée.
+        </p>
+
+        <ul class="mt-6 flex flex-wrap gap-3">
+          {
+            qualities.map((q, i) => (
+              <li
+                class:list={[
+                  "rounded-full px-4 py-1.5 text-xs font-medium",
+                  i === 0 ? "bg-soleil text-encre" : "text-graphite/50",
+                ]}
+              >
+                {q}
+              </li>
+            ))
+          }
+        </ul>
+
+        <a href="/parcours" class={`${btnDark} mt-8`}>
+          Découvrir mon parcours
+          <img src={icon("journey")} alt="" width="18" height="18" class="h-[18px] w-[18px]" />
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================= PROJETS ======================= -->
+  <section class="bg-neige pb-20 text-nuit sm:pb-28" aria-labelledby="projets-title">
+    <div class={container}>
+      <div class="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+        <div class="max-w-2xl">
+          <p class={eyebrow}>
+            <span class="h-2.5 w-2.5 rounded-full bg-soleil"></span>
+            PROJETS
+          </p>
+          <h2 id="projets-title" class="mt-4 font-outfit text-3xl font-bold leading-tight sm:text-4xl">
+            Des projets pour concevoir, coder et déployer.
+          </h2>
+          <p class="mt-4 text-graphite/60">
+            Des projets de cours et personnels qui montrent une progression vers le développement web, avec une attention
+            au design et à la communication.
+          </p>
+        </div>
+        <a href="/projets" class={`${btnGhost} shrink-0 self-start md:self-end`}>Tous les projets</a>
+      </div>
+
+      <ul class="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {
+          projects.map((p) => (
+            <li>
+              <a
+                href={`/projets/${p.slug}`}
+                class:list={[
+                  "group flex h-full flex-col overflow-hidden rounded-3xl transition duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-black/15 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-soleil",
+                  p.card,
+                ]}
+              >
+                <div class="aspect-[4/3] overflow-hidden bg-black/5">
+                  <img
+                    src={p.image}
+                    alt={p.alt}
+                    width="640"
+                    height="480"
+                    loading="lazy"
+                    class="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                  />
+                </div>
+
+                <div class="relative flex flex-1 flex-col p-6">
+                  <span class={`absolute right-6 top-6 h-3 w-3 rounded-full ${p.dot}`} aria-hidden="true" />
+                  <p class={`font-inter text-[0.7rem] font-bold uppercase ${p.label}`}>{p.type}</p>
+                  <h3 class="mt-2 font-outfit text-2xl font-bold">{p.title}</h3>
+                  <p class={`mt-3 text-sm leading-relaxed ${p.tagsColor}`}>{p.tags}</p>
+                  <p class="mt-auto flex items-center gap-2 pt-6 font-outfit text-sm font-bold">
+                    Voir le projet en détail
+                    <img
+                      src={icon("yellow_arrow")}
+                      alt=""
+                      width="16"
+                      height="16"
+                      class="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1"
+                    />
+                  </p>
+                </div>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- ======================= COMPÉTENCES ======================= -->
+  <section class="bg-nuit text-neige" aria-labelledby="competences-title">
+    <div class={`${container} py-20 sm:py-28`}>
+      <div class="flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
+        <div class="max-w-3xl">
+          <p class="flex items-center gap-2.5 font-inter text-xs font-bold text-soleil">
+            <span class="h-2.5 w-2.5 rounded-full bg-soleil"></span>
+            COMPÉTENCES
+          </p>
+          <h2 id="competences-title" class="mt-4 font-outfit text-3xl font-bold leading-tight sm:text-4xl lg:text-5xl">
+            Une voie principale en développement web, avec des compétences complémentaires en création et communication.
+          </h2>
+          <p class="mt-5 text-neige/80">
+            Une progression MMI centrée sur le développement web, avec une vision créative et narrative.
+          </p>
+        </div>
+        <a href="/a-propos" class={`${btnYellow} shrink-0 self-start md:self-end`}>Voir toutes mes compétences</a>
+      </div>
+
+      <div class="relative mt-12 h-px bg-white/10" aria-hidden="true">
+        <span class="absolute -top-1.5 right-[12%] h-3 w-3 rounded-full bg-soleil"></span>
+      </div>
+
+      <ul class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        {
+          skills.map((s) => (
+            <li class="rounded-3xl bg-abysse p-6 transition duration-300 hover:-translate-y-1 hover:ring-1 hover:ring-soleil/50">
+              <span class="flex h-12 w-12 items-center justify-center rounded-xl bg-miel">
+                <img src={icon(s.icon)} alt="" width="24" height="24" class="h-6 w-6" />
+              </span>
+              <h3 class="mt-6 font-outfit text-xl font-bold">{s.title}</h3>
+              <p class="mt-3 text-sm leading-relaxed text-neige/75">{s.text}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- ======================= PARCOURS ======================= -->
+  <section class="bg-neige text-nuit" aria-labelledby="parcours-title">
+    <div class={`${container} grid gap-12 py-20 sm:py-28 lg:grid-cols-[2fr_3fr] lg:gap-20`}>
+      <div>
+        <p class={eyebrow}>
+          <span class="h-2.5 w-2.5 rounded-full bg-soleil"></span>
+          MON PARCOURS
+        </p>
+        <h2 id="parcours-title" class="mt-4 font-outfit text-3xl font-bold leading-tight sm:text-4xl lg:text-5xl">
+          Deux années pour consolider le développement web.
+        </h2>
+        <p class="mt-5 text-graphite/60">
+          Une progression MMI centrée sur le développement web, avec des projets concrets et des apprentissages
+          documentés.
+        </p>
+        <a href="/parcours" class={`${btnDark} mt-8`}>
+          Découvrir mon parcours
+          <img src={icon("arrow_bottom")} alt="" width="16" height="16" class="h-4 w-4 -rotate-45" />
+        </a>
+      </div>
+
+      <ol class="flex flex-col gap-10 lg:pt-2">
+        {
+          timeline.map((t) => (
+            <li class="grid gap-3 sm:grid-cols-[6rem_1fr] sm:gap-6">
+              <p class="flex items-center gap-3 font-outfit text-sm font-bold text-safran">
+                <span class="h-2.5 w-2.5 rounded-full bg-soleil" aria-hidden="true" />
+                {t.year}
+              </p>
+              <div>
+                <h3 class="font-outfit text-lg font-bold">{t.title}</h3>
+                <p class="mt-2 text-sm leading-relaxed text-graphite/55">{t.text}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <!-- ======================= CTA ======================= -->
+  <section class="bg-soleil text-encre" aria-labelledby="cta-title">
+    <div class={`${container} flex flex-col gap-8 py-14 md:flex-row md:items-center md:justify-between`}>
+      <div>
+        <p class="font-inter text-xs font-semibold text-cuivre">UN PREMIER PROJET, UNE PREMIÈRE EXPÉRIENCE</p>
+        <h2 id="cta-title" class="mt-3 max-w-3xl font-outfit text-3xl font-light leading-tight sm:text-4xl">
+          Vous cherchez un jeune développeur web curieux, créatif et prêt à apprendre ?
+        </h2>
+      </div>
+
+      <div class="shrink-0 md:text-center">
+        <a href="/contact" class={`${btnDark} px-6 py-4`}>
+          Discuter d’un projet
+          <img src={icon("white_contact")} alt="" width="18" height="18" class="h-[18px] w-[18px]" />
+        </a>
+        <p class="mt-3 text-xs text-cuivre">Réponse habituelle sous 48 h.</p>
+      </div>
+    </div>
+  </section>
 </Layout>
