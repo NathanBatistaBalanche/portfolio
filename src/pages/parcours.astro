@@ -1,7 +1,7 @@
 ---
 /**
  * src/pages/parcours.astro
- * Page Parcours : hero, résumé en 3 points, puis chronologie (du plus récent au plus ancien).
+ * Page Parcours : hero + chiffres, résumé en 3 cartes, chronologie animée (du plus récent au plus ancien), CTA.
  * Le Header et le Footer sont dans le Layout.
  */
 import Layout from "../layouts/Layout.astro";
@@ -43,114 +43,398 @@ const steps = [
   },
 ];
 
+// Chiffres du hero, déduits de la chronologie
+const stats = [
+  { valeur: String(steps.length).padStart(2, "0"), label: "étapes racontées", couleur: "text-soleil" },
+  { valeur: steps[steps.length - 1].years.slice(0, 4), label: "point de départ", couleur: "text-soleil" },
+  { valeur: steps[0].years.slice(0, 4), label: "étape en cours", couleur: "text-miel" },
+];
+
 const container = "mx-auto w-full max-w-7xl px-5 sm:px-8";
 ---
 
-<Layout>
-  <!-- ======================= HERO ======================= -->
-  <section class="relative overflow-hidden bg-nuit text-neige" aria-labelledby="parcours-title">
-    <div class={`${container} relative py-20 sm:py-28 lg:py-32`}>
-      <p class="flex items-center gap-3 font-inter text-sm font-bold text-soleil">
-        <Hexagon class="w-4" fill="var(--color-soleil)" />
-        MON PARCOURS
-      </p>
-
-      <h1
-        id="parcours-title"
-        class="mt-6 max-w-4xl font-outfit text-5xl font-light leading-[1.08] tracking-tight sm:text-6xl lg:text-7xl"
-      >
-        Mon parcours se construit étape après étape.
-      </h1>
-
-      <p class="mt-8 max-w-2xl text-lg leading-relaxed text-neige/85">
-        Trois étapes : le bac général, puis les deux premières années de MMI. Une chronologie simple pour raconter mon
-        parcours, sans inventer.
-      </p>
-
-      <!-- Nid d'abeilles décoratif -->
-      <div class="absolute right-8 top-1/2 hidden h-[12.13rem] w-70 -translate-y-1/2 lg:block xl:right-12" aria-hidden="true">
-        <Hexagon class="absolute left-0 top-[3.03rem] w-28 scale-95" fill="var(--color-neige)" stroke="var(--color-abysse)" />
-        <Hexagon class="absolute left-[5.25rem] top-0 w-28 scale-95" fill="var(--color-soleil)" />
-        <Hexagon class="absolute left-[10.5rem] top-[3.03rem] w-28 scale-95" fill="var(--color-abysse)" />
-        <Hexagon class="absolute left-[5.25rem] top-[6.06rem] w-28 scale-95" fill="var(--color-neige)" stroke="var(--color-abysse)" />
+<Layout title="Parcours — Nathan Batista Balanche">
+  <div id="pc">
+    <!-- ======================= HERO ======================= -->
+    <section class="relative isolate overflow-hidden bg-nuit text-neige" aria-labelledby="parcours-title">
+      <div aria-hidden="true" class="pointer-events-none absolute inset-0 -z-10">
+        <div class="pc-honey absolute inset-0"></div>
+        <div class="pc-drift absolute -left-32 top-10 h-96 w-96 rounded-full bg-soleil/15 blur-3xl"></div>
+        <div class="pc-drift pc-drift-rev absolute -right-24 bottom-0 h-[28rem] w-[28rem] rounded-full bg-azur/30 blur-3xl"></div>
       </div>
-    </div>
-  </section>
 
-  <!-- ======================= RÉSUMÉ ======================= -->
-  <section class="bg-neige text-nuit">
-    <div class={`${container} pt-12 sm:pt-16`}>
-      <ul class="grid gap-8 md:grid-cols-3">
-        {
-          summary.map((s) => (
-            <li class="flex items-center gap-4 px-2">
-              <img src={`/icons/${s.icon}.svg`} alt="" width="32" height="auto" class="h-8 w-8 shrink-0" />
-              <div>
-                <p class="font-inter text-xs font-semibold uppercase tracking-wide text-graphite/55">{s.label}</p>
-                <p class="mt-0.5 font-outfit text-lg font-bold">{s.value}</p>
-              </div>
-            </li>
-          ))
-        }
-      </ul>
-    </div>
-  </section>
+      <div class={`${container} grid items-center gap-12 pb-32 pt-16 lg:grid-cols-[1fr_auto] lg:pb-40 lg:pt-24`}>
+        <div class="max-w-4xl">
+          <p class="pc-in inline-flex items-center gap-3 rounded-full border border-white/10 bg-abysse/80 px-4 py-2 font-inter text-xs text-neige/90 backdrop-blur" style="--i:0">
+            <span class="pc-ping h-2.5 w-2.5 rounded-full bg-soleil"></span>
+            Mon parcours · MMI en cours
+          </p>
 
-  <!-- ======================= CHRONOLOGIE ======================= -->
-  <section class="bg-neige pb-24 pt-16 text-nuit sm:pb-32 sm:pt-24" aria-label="Chronologie">
-    <div class={container}>
-      <!--
-        Chaque étape : l'hexagone est collé en haut (top-0) et le trait part de son bord bas
-        jusqu'en bas de l'étape, donc jusqu'au haut de l'hexagone suivant : ils se touchent.
-        Hauteur d'un hexagone w-12 : 3rem × 0,866 = 2,598rem.
-      -->
-      <ol class="flex flex-col">
-        {
-          steps.map((step, i) => {
-            const isLast = i === steps.length - 1;
-            return (
-              <li class="relative grid gap-5 pb-16 last:pb-0 md:grid-cols-[22rem_1fr] md:gap-8">
-                <Hexagon
-                  class="absolute left-1 top-0 z-10 w-12"
-                  fill={step.current ? "var(--color-soleil)" : "var(--color-neige)"}
-                  stroke="var(--color-cuivre)"
-                  strokeWidth={3}
-                />
-                {!isLast && (
-                  <span
-                    class="absolute bottom-0 left-7 top-[2.598rem] w-0.5 -translate-x-1/2 bg-cuivre"
-                    aria-hidden="true"
-                  />
-                )}
+          <h1 id="parcours-title" class="pc-in mt-8 text-balance font-outfit text-5xl font-light leading-[1.05] tracking-tight sm:text-6xl lg:text-7xl" style="--i:1">
+            Mon parcours se construit <span class="pc-grad font-medium">étape après étape.</span>
+          </h1>
 
-                <!-- Dates + badge -->
-                <div class="pl-[4.5rem]">
-                  <p class="flex h-[2.598rem] items-center font-outfit text-2xl font-bold text-cuivre">{step.years}</p>
-                  <span
-                    class:list={[
-                      "mt-3 inline-flex rounded-full px-4 py-1.5 font-inter text-sm font-medium",
-                      step.current ? "bg-soleil text-encre" : "border border-cuivre/40 text-graphite",
-                    ]}
-                  >
-                    {step.badge}
-                  </span>
+          <p class="pc-in mt-8 max-w-2xl text-base leading-relaxed text-neige/85 sm:text-lg" style="--i:2">
+            Trois étapes : le bac général, puis les deux premières années de MMI. Une chronologie simple pour raconter mon
+            parcours, sans inventer.
+          </p>
+
+          <dl class="pc-in mt-12 grid max-w-xl grid-cols-3 gap-6" style="--i:3">
+            {
+              stats.map((s) => (
+                <div class="border-t border-white/15 pt-4">
+                  <dt class={`font-outfit text-3xl font-bold sm:text-4xl ${s.couleur}`}>{s.valeur}</dt>
+                  <dd class="mt-2 text-xs text-neige/75 sm:text-sm">{s.label}</dd>
                 </div>
+              ))
+            }
+          </dl>
+        </div>
 
-                <!-- Contenu -->
-                <div class="pl-[4.5rem] md:pl-0 md:pt-[0.15rem]">
-                  <h2 class="text-balance font-outfit text-2xl font-bold leading-tight text-encre sm:text-3xl">{step.title}</h2>
-                  <p class="mt-4 max-w-3xl leading-relaxed text-graphite/60">{step.text}</p>
-                  <ul class="mt-5 flex flex-wrap gap-x-8 gap-y-2">
-                    {step.tags.map((tag) => (
-                      <li class="text-sm text-graphite/55">{tag}</li>
-                    ))}
-                  </ul>
+        <!-- Nid d'abeilles décoratif -->
+        <div aria-hidden="true" class="pc-in relative hidden h-[14.6rem] w-[21rem] lg:block" style="--i:3">
+          <span class="pc-float absolute left-[6.3rem] top-0 w-[8.4rem] drop-shadow-xl">
+            <Hexagon class="block w-full" fill="var(--color-soleil)" />
+          </span>
+          <span class="pc-float absolute left-0 top-[3.64rem] w-[8.4rem]" style="--d:-3s">
+            <Hexagon class="block w-full" fill="var(--color-neige)" stroke="var(--color-abysse)" />
+          </span>
+          <span class="pc-float absolute left-[12.6rem] top-[3.64rem] w-[8.4rem]" style="--d:-6s">
+            <Hexagon class="block w-full" fill="var(--color-abysse)" />
+          </span>
+          <span class="pc-float absolute left-[6.3rem] top-[7.28rem] w-[8.4rem]" style="--d:-9s">
+            <Hexagon class="block w-full" fill="var(--color-neige)" stroke="var(--color-abysse)" />
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================= RÉSUMÉ (cartes qui chevauchent le hero) ======================= -->
+    <section class="relative isolate overflow-hidden bg-neige text-nuit" aria-label="Résumé">
+      <div aria-hidden="true" class="pc-honey-light pointer-events-none absolute inset-0 -z-10"></div>
+
+      <div class={`${container} relative z-10 -mt-20 sm:-mt-24`}>
+        <ul class="grid gap-5 md:grid-cols-3">
+          {
+            summary.map((s, i) => (
+              <li
+                data-reveal
+                style={`--d:${i * 110}ms`}
+                class="group flex items-center gap-5 rounded-3xl bg-white p-6 shadow-xl shadow-nuit/10 ring-1 ring-black/5 transition duration-500 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-nuit/20"
+              >
+                <span class="pc-hex grid h-[3.46rem] w-16 shrink-0 place-items-center bg-nuit transition duration-500 group-hover:rotate-6 group-hover:bg-abysse" aria-hidden="true">
+                  <img src={`/icons/${s.icon}.svg`} alt="" width="28" height="28" class="h-7 w-7" />
+                </span>
+                <div>
+                  <p class="font-inter text-xs font-semibold uppercase tracking-wide text-graphite/55">{s.label}</p>
+                  <p class="mt-1 font-outfit text-lg font-bold leading-snug">{s.value}</p>
                 </div>
               </li>
-            );
-          })
-        }
-      </ol>
-    </div>
-  </section>
+            ))
+          }
+        </ul>
+      </div>
+
+      <!-- ======================= CHRONOLOGIE ======================= -->
+      <div class={`${container} pb-24 pt-20 sm:pb-32 sm:pt-28`}>
+        <div class="mb-14 max-w-2xl" data-reveal>
+          <p class="flex items-center gap-3 font-inter text-xs font-bold uppercase tracking-[0.14em] text-safran">
+            <Hexagon class="w-3.5" fill="var(--color-soleil)" />
+            Chronologie
+          </p>
+          <h2 class="mt-4 text-balance font-outfit text-3xl font-bold leading-tight sm:text-4xl lg:text-5xl">
+            Du bac général à la <span class="pc-underline">2ème année de MMI.</span>
+          </h2>
+        </div>
+
+        <!--
+          Chaque étape : l'hexagone est collé en haut (top-0) et le trait part de son bord bas
+          jusqu'en bas de l'étape, donc jusqu'au haut de l'hexagone suivant : ils se touchent.
+          Hauteur d'un hexagone w-12 : 3rem × 0,866 = 2,598rem.
+          Le trait se « remplit » au fil du scroll (variable --p, entre 0 et 1, gérée par le script).
+        -->
+        <ol class="flex flex-col">
+          {
+            steps.map((step, i) => {
+              const isLast = i === steps.length - 1;
+              return (
+                <li class="relative grid gap-5 pb-16 last:pb-0 md:grid-cols-[18rem_1fr] md:gap-10" data-reveal style={`--d:${i * 90}ms`}>
+                  {step.current && (
+                    <Hexagon class="pc-halo absolute left-1 top-0 w-12" fill="var(--color-soleil)" />
+                  )}
+                  <Hexagon
+                    class="absolute left-1 top-0 z-10 w-12"
+                    fill={step.current ? "var(--color-soleil)" : "var(--color-neige)"}
+                    stroke="var(--color-cuivre)"
+                    strokeWidth={3}
+                  />
+                  {!isLast && (
+                    <span class="pc-seg absolute bottom-0 left-7 top-[2.598rem] w-0.5 -translate-x-1/2 bg-cuivre/25" aria-hidden="true">
+                      <span class="pc-fill absolute inset-0 bg-linear-to-b from-cuivre to-soleil"></span>
+                    </span>
+                  )}
+
+                  <!-- Dates + badge -->
+                  <div class="pl-[4.5rem] md:pr-2">
+                    <p class="flex h-[2.598rem] items-center font-outfit text-3xl font-bold text-cuivre">{step.years}</p>
+                    <span
+                      class:list={[
+                        "mt-3 inline-flex items-center gap-2 rounded-full px-4 py-1.5 font-inter text-sm font-medium",
+                        step.current ? "bg-soleil text-encre shadow-md shadow-soleil/30" : "border border-cuivre/40 text-graphite",
+                      ]}
+                    >
+                      {step.current && <span class="pc-ping-dark h-2 w-2 rounded-full bg-encre"></span>}
+                      {step.badge}
+                    </span>
+                  </div>
+
+                  <!-- Carte de contenu -->
+                  <div
+                    class:list={[
+                      "ml-[4.5rem] rounded-3xl bg-white p-6 transition duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-nuit/10 sm:p-8 md:ml-0",
+                      step.current ? "ring-2 ring-soleil shadow-lg shadow-soleil/15" : "ring-1 ring-black/5",
+                    ]}
+                  >
+                    <h3 class="text-balance font-outfit text-xl font-bold leading-snug text-encre sm:text-2xl">{step.title}</h3>
+                    <p class="mt-4 max-w-3xl leading-relaxed text-graphite/65">{step.text}</p>
+                    <ul class="mt-6 flex flex-wrap gap-2">
+                      {step.tags.map((tag) => (
+                        <li
+                          class:list={[
+                            "rounded-full px-3 py-1 text-xs font-medium",
+                            step.current ? "bg-miel/50 text-encre" : "bg-nuit/5 text-nuit",
+                          ]}
+                        >
+                          {tag}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </li>
+              );
+            })
+          }
+        </ol>
+      </div>
+    </section>
+
+    <!-- ======================= CTA ======================= -->
+    <section class="pc-band relative isolate overflow-hidden text-encre" aria-labelledby="pc-cta-title">
+      <div aria-hidden="true" class="pc-honey-band pointer-events-none absolute inset-0 -z-10"></div>
+      <span aria-hidden="true" class="pc-float absolute -right-10 -top-10 -z-10 hidden w-56 md:block" style="--r:10deg">
+        <Hexagon class="block w-full" stroke="var(--color-encre)" strokeWidth={1.2} />
+      </span>
+      <span aria-hidden="true" class="pc-float absolute bottom-[-3rem] right-[22%] -z-10 hidden w-28 md:block" style="--d:-3s;--r:-8deg">
+        <Hexagon class="block w-full" fill="rgb(255 255 255 / 0.35)" />
+      </span>
+
+      <div class={`${container} flex flex-col gap-10 py-20 md:flex-row md:items-center md:justify-between`} data-reveal>
+        <div>
+          <p class="flex items-center gap-3 font-inter text-xs font-bold uppercase tracking-[0.14em] text-cuivre">
+            <Hexagon class="w-3.5" fill="var(--color-encre)" />
+            La suite du parcours
+          </p>
+          <h2 id="pc-cta-title" class="mt-4 max-w-3xl text-balance font-outfit text-3xl font-light leading-tight sm:text-4xl lg:text-5xl">
+            À la recherche d’un <span class="font-bold">stage ou d’une alternance</span> en développement web.
+          </h2>
+        </div>
+
+        <div class="shrink-0 md:text-center">
+          <a
+            href="/contact"
+            class="group inline-flex items-center gap-3 rounded-xl bg-nuit px-8 py-5 font-outfit text-base font-bold text-neige shadow-lg shadow-nuit/25 transition duration-300 hover:-translate-y-0.5 hover:bg-abysse focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-encre"
+          >
+            Discuter d’un projet
+            <img src="/icons/white_contact.svg" alt="" width="18" height="18" class="h-[18px] w-[18px] transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+          </a>
+          <p class="mt-4 flex items-center justify-center gap-2 text-xs font-medium text-encre/70">
+            <span class="pc-ping-dark h-2 w-2 rounded-full bg-encre"></span>
+            Réponse habituelle sous 48 h.
+          </p>
+        </div>
+      </div>
+    </section>
+  </div>
 </Layout>
+
+<style>
+  /* ---------- Nid d'abeilles ---------- */
+  .pc-honey {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='56' viewBox='0 0 100 56'%3E%3Cpath d='M66 28L50 0L16 0L0 28L16 56L50 56L66 28L100 28' fill='none' stroke='white' stroke-opacity='.06'/%3E%3Cpath d='M0 28L34 28L50 0L84 0L100 28L84 56L50 56L34 28' fill='none' stroke='white' stroke-opacity='.06'/%3E%3C/svg%3E");
+    background-size: 120px 67px;
+    mask-image: radial-gradient(ellipse at 75% 40%, #000 0%, transparent 75%);
+  }
+  .pc-honey-light {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='56' viewBox='0 0 100 56'%3E%3Cpath d='M66 28L50 0L16 0L0 28L16 56L50 56L66 28L100 28' fill='none' stroke='%2311273b' stroke-opacity='.06'/%3E%3Cpath d='M0 28L34 28L50 0L84 0L100 28L84 56L50 56L34 28' fill='none' stroke='%2311273b' stroke-opacity='.06'/%3E%3C/svg%3E");
+    background-size: 120px 67px;
+    mask-image: radial-gradient(ellipse at 90% 45%, #000 0%, transparent 60%);
+  }
+  .pc-honey-band {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='56' viewBox='0 0 100 56'%3E%3Cpath d='M66 28L50 0L16 0L0 28L16 56L50 56L66 28L100 28' fill='none' stroke='%230f0f0f' stroke-opacity='.1'/%3E%3Cpath d='M0 28L34 28L50 0L84 0L100 28L84 56L50 56L34 28' fill='none' stroke='%230f0f0f' stroke-opacity='.1'/%3E%3C/svg%3E");
+    background-size: 120px 67px;
+    mask-image: radial-gradient(ellipse at 80% 50%, #000 0%, transparent 80%);
+  }
+  .pc-band {
+    background: linear-gradient(115deg, var(--color-soleil) 0%, var(--color-miel) 55%, var(--color-soleil) 100%);
+  }
+
+  /* ---------- Texte ---------- */
+  .pc-grad {
+    background: linear-gradient(100deg, var(--color-miel), var(--color-soleil) 50%, var(--color-safran));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .pc-underline {
+    background-image: linear-gradient(90deg, var(--color-soleil), var(--color-safran));
+    background-repeat: no-repeat;
+    background-position: 0 92%;
+    background-size: 100% 0.22em;
+    padding-bottom: 0.05em;
+  }
+
+  /* ---------- Hexagone en clip-path (badges d'icônes) ---------- */
+  .pc-hex {
+    clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%);
+  }
+
+  /* ---------- Lueurs / flottement / pastilles ---------- */
+  .pc-drift {
+    animation: pc-drift 16s ease-in-out infinite;
+  }
+  .pc-drift-rev {
+    animation-direction: reverse;
+    animation-delay: -8s;
+  }
+  @keyframes pc-drift {
+    0%, 100% { transform: translate3d(0, 0, 0); }
+    50% { transform: translate3d(40px, 18px, 0); }
+  }
+
+  .pc-float {
+    animation: pc-float 9s ease-in-out infinite;
+    animation-delay: var(--d, 0s);
+  }
+  @keyframes pc-float {
+    0%, 100% { transform: translate3d(0, 0, 0) rotate(var(--r, 0deg)); }
+    50% { transform: translate3d(0, -12px, 0) rotate(calc(var(--r, 0deg) + 5deg)); }
+  }
+
+  .pc-ping {
+    animation: pc-ping 1.8s ease-out infinite;
+  }
+  @keyframes pc-ping {
+    0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-soleil) 70%, transparent); }
+    100% { box-shadow: 0 0 0 10px transparent; }
+  }
+  .pc-ping-dark {
+    animation: pc-ping-dark 1.8s ease-out infinite;
+  }
+  @keyframes pc-ping-dark {
+    0% { box-shadow: 0 0 0 0 rgb(15 15 15 / 0.5); }
+    100% { box-shadow: 0 0 0 9px transparent; }
+  }
+
+  /* Halo qui pulse derrière l'hexagone de l'étape en cours */
+  :global(.pc-halo) {
+    z-index: 0;
+    transform-origin: center;
+    animation: pc-halo 2.4s ease-out infinite;
+  }
+  @keyframes pc-halo {
+    0% { transform: scale(1); opacity: 0.55; }
+    100% { transform: scale(1.7); opacity: 0; }
+  }
+
+  /* ---------- Trait de la frise : se remplit au scroll (--p = 0 → 1) ---------- */
+  .pc-fill {
+    transform-origin: top;
+    transform: scaleY(var(--p, 1));
+  }
+
+  /* ---------- Apparition du hero au chargement ---------- */
+  .pc-in {
+    animation: pc-in 0.95s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: calc(var(--i, 0) * 100ms + 120ms);
+  }
+  @keyframes pc-in {
+    from {
+      opacity: 0;
+      transform: translateY(26px);
+    }
+  }
+
+  /* ---------- Apparition au scroll (activée par le script) ---------- */
+  .pc-ready [data-reveal] {
+    opacity: 0;
+    transform: translateY(32px);
+    transition:
+      opacity 0.8s ease,
+      transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+    transition-delay: var(--d, 0ms);
+  }
+  .pc-ready [data-reveal].is-in {
+    opacity: 1;
+    transform: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation: none !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+</style>
+
+<script>
+  const root = document.getElementById("pc");
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  if (root && !reduceMotion) {
+    // ----- Apparition au scroll (sans JS ou animations réduites : tout reste visible) -----
+    if ("IntersectionObserver" in window) {
+      root.classList.add("pc-ready");
+      const reveal = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("is-in");
+              reveal.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.12, rootMargin: "0px 0px -6% 0px" },
+      );
+      root.querySelectorAll("[data-reveal]").forEach((el) => reveal.observe(el));
+    }
+
+    // ----- Le trait de la frise se remplit à mesure qu'on descend -----
+    const segments = root.querySelectorAll<HTMLElement>(".pc-seg");
+    let attente = false;
+
+    const mettreAJour = () => {
+      attente = false;
+      const repere = window.innerHeight * 0.6; // ligne imaginaire aux 60 % de l'écran
+      segments.forEach((seg) => {
+        const r = seg.getBoundingClientRect();
+        const p = Math.min(Math.max((repere - r.top) / r.height, 0), 1);
+        seg.style.setProperty("--p", p.toFixed(3));
+      });
+    };
+
+    if (segments.length) {
+      mettreAJour();
+      window.addEventListener(
+        "scroll",
+        () => {
+          if (!attente) {
+            attente = true;
+            requestAnimationFrame(mettreAJour);
+          }
+        },
+        { passive: true },
+      );
+      window.addEventListener("resize", mettreAJour);
+    }
+  }
+</script>
