@@ -74,3 +74,23 @@ export function listerMessages(options: { nonLusSeulement?: boolean } = {}): Mes
 export function marquerLu(id: number): void {
   db.prepare("UPDATE messages SET lu = 1 WHERE id = ?").run(id);
 }
+
+export function marquerNonLu(id: number): void {
+  db.prepare("UPDATE messages SET lu = 0 WHERE id = ?").run(id);
+}
+
+export function marquerTousLus(): void {
+  db.prepare("UPDATE messages SET lu = 1 WHERE lu = 0").run();
+}
+
+export function supprimerMessage(id: number): void {
+  db.prepare("DELETE FROM messages WHERE id = ?").run(id);
+}
+
+export function compterMessages(): { total: number; nonLus: number } {
+  const l = db.prepare("SELECT COUNT(*) AS total, COALESCE(SUM(lu = 0), 0) AS nonLus FROM messages").get() as {
+    total: number;
+    nonLus: number;
+  };
+  return { total: l.total, nonLus: l.nonLus };
+}

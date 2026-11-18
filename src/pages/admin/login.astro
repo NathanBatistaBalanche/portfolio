@@ -1,0 +1,114 @@
+---
+/**
+ * src/pages/admin/login.astro
+ * Connexion à l'espace admin. Le formulaire est traité ici même (méthode POST).
+ */
+import Layout from "../../layouts/Layout.astro";
+import Hexagon from "../../components/Hexagon.astro";
+import {
+  COOKIE_SESSION,
+  DUREE_SESSION_S,
+  adminConfigure,
+  creerSession,
+  effacerEchecs,
+  identifiantsValides,
+  noterEchec,
+  sessionValide,
+  tropDEchecs,
+} from "../../lib/admin";
+
+export const prerender = false;
+Astro.response.headers.set("X-Robots-Tag", "noindex, nofollow");
+
+if (sessionValide(Astro.cookies.get(COOKIE_SESSION)?.value)) return Astro.redirect("/admin/messages");
+
+let ip = "inconnue";
+try {
+  ip = Astro.request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || Astro.clientAddress;
+} catch {}
+
+const configure = adminConfigure();
+let erreur = "";
+
+if (Astro.request.method === "POST") {
+  const donnees = await Astro.request.formData();
+  const utilisateur = String(donnees.get("utilisateur") ?? "");
+  const motDePasse = String(donnees.get("mot_de_passe") ?? "");
+
+  if (!configure) {
+    erreur = "L'espace admin n'est pas configuré (variables ADMIN_* manquantes dans le .env).";
+  } else if (tropDEchecs(ip)) {
+    erreur = "Trop de tentatives. Réessaie dans 15 minutes.";
+  } else if (identifiantsValides(utilisateur, motDePasse)) {
+    effacerEchecs(ip);
+    Astro.cookies.set(COOKIE_SESSION, creerSession(), {
+      httpOnly: true,
+      sameSite: "strict",
+      secure: import.meta.env.PROD,
+      path: "/admin",
+      maxAge: DUREE_SESSION_S,
+    });
+    return Astro.redirect("/admin/messages");
+  } else {
+    noterEchec(ip);
+    erreur = "Identifiant ou mot de passe incorrect.";
+  }
+}
+
+const label = "block font-outfit text-sm font-bold text-nuit";
+const champ =
+  "mt-2 w-full rounded-xl border border-graphite/20 bg-neige/60 px-4 py-3 font-inter text-sm text-encre transition duration-200 focus:border-soleil focus:bg-white focus:outline-none focus:ring-4 focus:ring-soleil/25";
+---
+
+<Layout>
+  <section class="relative isolate overflow-hidden bg-nuit text-neige">
+    <div aria-hidden="true" class="pointer-events-none absolute inset-0 -z-10">
+      <div class="ad-honey absolute inset-0"></div>
+      <div class="absolute -left-32 top-0 h-96 w-96 rounded-full bg-soleil/15 blur-3xl"></div>
+      <div class="absolute -right-24 bottom-0 h-[28rem] w-[28rem] rounded-full bg-azur/30 blur-3xl"></div>
+    </div>
+
+    <div class="mx-auto grid min-h-[70vh] w-full max-w-md place-items-center px-5 py-20">
+      <div class="w-full">
+        <div class="mb-8 text-center">
+          <Hexagon class="mx-auto w-14" fill="var(--color-soleil)" />
+          <h1 class="mt-5 font-outfit text-3xl font-light tracking-tight">Espace <span class="font-medium">admin</span></h1>
+        </div>
+
+        <form method="post" class="space-y-6 rounded-[2rem] bg-white p-8 text-encre shadow-2xl shadow-black/40">
+          <div>
+            <label for="utilisateur" class={label}>Identifiant</label>
+            <input id="utilisateur" name="utilisateur" type="text" required autocomplete="username" class={champ} />
+          </div>
+          <div>
+            <label for="mot_de_passe" class={label}>Mot de passe</label>
+            <input id="mot_de_passe" name="mot_de_passe" type="password" required autocomplete="current-password" class={champ} />
+          </div>
+
+          {
+            (erreur || !configure) && (
+              <p role="alert" class="rounded-xl border border-cuivre/40 bg-miel/30 px-4 py-3 text-sm font-medium text-encre">
+                {erreur || "L'espace admin n'est pas configuré (variables ADMIN_* manquantes dans le .env)."}
+              </p>
+            )
+          }
+
+          <button
+            type="submit"
+            class="w-full rounded-xl bg-linear-to-br from-miel via-soleil to-safran px-6 py-3.5 font-outfit text-sm font-bold text-encre shadow-lg shadow-soleil/25 transition duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-soleil/40 focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-soleil"
+          >
+            Se connecter
+          </button>
+        </form>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .ad-honey {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='56' viewBox='0 0 100 56'%3E%3Cpath d='M66 28L50 0L16 0L0 28L16 56L50 56L66 28L100 28' fill='none' stroke='white' stroke-opacity='.06'/%3E%3Cpath d='M0 28L34 28L50 0L84 0L100 28L84 56L50 56L34 28' fill='none' stroke='white' stroke-opacity='.06'/%3E%3C/svg%3E");
+    background-size: 120px 67px;
+    mask-image: radial-gradient(ellipse at 50% 40%, #000 0%, transparent 75%);
+  }
+</style>
