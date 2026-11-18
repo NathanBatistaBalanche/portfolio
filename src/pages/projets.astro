@@ -1,7 +1,478 @@
 ---
-import Layout from '../layouts/Layout.astro';
+/**
+ * src/pages/projets.astro
+ * Page « Tous les projets » : hero, tri par catégorie, grille de cartes, bandeau final.
+ * Le Header et le Footer sont dans le Layout.
+ *
+ * Les projets et les catégories viennent de la base SQLite (src/lib/projets.ts).
+ * Le tri fonctionne de deux façons :
+ *   - avec JavaScript : filtrage instantané, sans rechargement, adresse mise à jour (?categorie=design)
+ *   - sans JavaScript : chaque bouton est un lien /projets?categorie=design, filtré côté serveur
+ *
+ * Icônes : /public/icons/*.svg — Images des projets : /public/images/projets/<id>/cover.webp
+ */
+import Layout from "../layouts/Layout.astro";
+import Hexagon from "../components/Hexagon.astro";
+import { listerProjets, listerCategories } from "../lib/projets";
+
+// Page lue depuis la base : rendue à chaque visite (nécessite l'adaptateur Astro, ex : @astrojs/node)
+export const prerender = false;
+
+const icon = (name: string) => `/icons/${name}.svg`;
+
+// ---------- Données ----------
+const projets = listerProjets();
+// Une catégorie sans projet n'a pas de bouton (elle apparaîtra dès qu'un projet y sera rangé)
+const categories = listerCategories().filter((c) => c.total > 0);
+
+const demande = Astro.url.searchParams.get("categorie") ?? "tous";
+const actif = categories.some((c) => c.id === demande) ? demande : "tous";
+
+const filtres = [
+  { id: "tous", nom: "Tous", total: projets.length, href: "/projets" },
+  ...categories.map((c) => ({ id: c.id, nom: c.nom, total: c.total, href: `/projets?categorie=${c.id}` })),
+];
+
+const estVisible = (p: (typeof projets)[number]) => actif === "tous" || p.categories.some((c) => c.id === actif);
+
+// Trois styles de carte, décalés d'une rangée à l'autre comme sur la maquette
+const themes = [
+  { card: "bg-miel text-encre", chip: "bg-encre/10 text-encre" },
+  { card: "bg-nuit text-neige", chip: "bg-white/10 text-neige" },
+  { card: "bg-white text-encre ring-1 ring-black/5", chip: "bg-nuit/5 text-nuit" },
+];
+const theme = (i: number) => themes[(i + 2 * Math.floor(i / 3)) % themes.length];
+
+// Classe réutilisable (la même que l'index)
+const container = "mx-auto w-full max-w-7xl px-5 sm:px-8";
 ---
 
-<Layout>
-	<p></p>
+<Layout title="Projets — Nathan Batista Balanche">
+  <div id="pj">
+    <!-- ======================= HERO ======================= -->
+    <section class="relative isolate overflow-hidden bg-nuit text-neige">
+      <div aria-hidden="true" class="pointer-events-none absolute inset-0 -z-10">
+        <div class="pj-honey absolute inset-0"></div>
+        <div class="pj-drift absolute -left-32 top-10 h-96 w-96 rounded-full bg-soleil/15 blur-3xl"></div>
+        <div class="pj-drift pj-drift-rev absolute -right-24 bottom-0 h-[28rem] w-[28rem] rounded-full bg-azur/30 blur-3xl"></div>
+      </div>
+
+      <div class={`${container} grid items-center gap-12 pb-20 pt-16 lg:grid-cols-[1fr_auto] lg:pb-28 lg:pt-24`}>
+        <div class="max-w-4xl">
+          <p class="pj-in flex items-center gap-3 font-inter text-xs font-bold uppercase tracking-[0.14em] text-soleil" style="--i:0">
+            <Hexagon class="w-3.5" fill="var(--color-soleil)" />
+            Portfolio de travaux
+          </p>
+
+          <h1 class="pj-in mt-6 text-balance font-outfit text-5xl font-light leading-[1.05] tracking-tight sm:text-6xl lg:text-7xl" style="--i:1">
+            Tous les projets, du brief à la <span class="pj-grad font-medium">dernière itération.</span>
+          </h1>
+
+          <p class="pj-in mt-8 max-w-2xl text-base leading-relaxed text-neige/85 sm:text-lg" style="--i:2">
+            Une sélection de projets scolaires et personnels. Chaque étude de cas précise le contexte, mon rôle, les
+            choix réalisés et ce que j’en retiens.
+          </p>
+        </div>
+
+        <!-- Nid d'abeilles décoratif -->
+        <div aria-hidden="true" class="pj-in relative hidden h-[14.6rem] w-[21rem] lg:block" style="--i:3">
+          <span class="pj-float absolute left-[6.3rem] top-0 w-[8.4rem] drop-shadow-xl" style="--r:0deg">
+            <Hexagon class="block w-full" fill="var(--color-soleil)" />
+          </span>
+          <span class="pj-float absolute left-0 top-[3.64rem] w-[8.4rem]" style="--d:-3s;--r:0deg">
+            <Hexagon class="block w-full" fill="var(--color-neige)" />
+          </span>
+          <span class="pj-float absolute left-[12.6rem] top-[3.64rem] w-[8.4rem]" style="--d:-6s;--r:0deg">
+            <Hexagon class="block w-full" fill="var(--color-abysse)" />
+          </span>
+          <span class="pj-float absolute left-[6.3rem] top-[7.28rem] w-[8.4rem]" style="--d:-9s;--r:0deg">
+            <Hexagon class="block w-full" fill="var(--color-neige)" />
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================= TRI + GRILLE ======================= -->
+    <section class="relative isolate bg-neige pb-24 pt-14 text-nuit sm:pb-32" aria-labelledby="liste-projets">
+      <h2 id="liste-projets" class="sr-only">Liste des projets</h2>
+
+      <div class={container}>
+        <!-- Barre de tri -->
+        <div class="flex flex-col gap-5 md:flex-row md:items-center md:justify-between" data-reveal>
+          <nav aria-label="Trier les projets par catégorie">
+            <ul class="flex flex-wrap gap-3">
+              {
+                filtres.map((f) => (
+                  <li>
+                    <a
+                      href={f.href}
+                      data-filtre={f.id}
+                      aria-current={f.id === actif ? "true" : undefined}
+                      class:list={["pj-chip", { "is-active": f.id === actif }]}
+                    >
+                      {f.nom} · {f.total}
+                    </a>
+                  </li>
+                ))
+              }
+            </ul>
+          </nav>
+
+          <p class="flex items-center gap-2.5 font-inter text-sm text-graphite/65">
+            <Hexagon class="w-3.5 shrink-0" fill="var(--color-soleil)" />
+            Cours ou projet personnel clairement indiqué
+          </p>
+        </div>
+
+        <p class="sr-only" role="status" aria-live="polite" data-annonce></p>
+
+        <!-- Grille -->
+        <ul class="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {
+            projets.map((p, i) => {
+              const t = theme(i);
+              return (
+                <li
+                  data-projet
+                  data-categories={p.categories.map((c) => c.id).join(" ")}
+                  hidden={!estVisible(p)}
+                  data-reveal
+                  style={`--d:${(i % 3) * 110}ms`}
+                >
+                  <a
+                    href={`/projets/${p.id}`}
+                    class:list={[
+                      "group flex h-full flex-col overflow-hidden rounded-3xl shadow-sm transition duration-500 hover:-translate-y-2 hover:shadow-2xl hover:shadow-nuit/20 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-soleil",
+                      t.card,
+                    ]}
+                  >
+                    <div class="relative aspect-[4/3] overflow-hidden bg-black/5">
+                      <!-- Visuel de secours : visible si l'image n'existe pas encore -->
+                      <div
+                        aria-hidden="true"
+                        class="absolute inset-0 grid place-items-center bg-linear-to-br from-abysse via-nuit to-encre"
+                      >
+                        <Hexagon class="absolute -right-4 -top-4 w-28 opacity-90" fill="var(--color-soleil)" />
+                        <Hexagon class="absolute -bottom-6 -left-4 w-24 opacity-70" stroke="var(--color-azur)" strokeWidth={2} />
+                        <span class="relative font-outfit text-sm font-medium text-neige/60">Visuel à venir</span>
+                      </div>
+
+                      {p.image && (
+                        <img
+                          data-cover
+                          src={p.image}
+                          alt={p.imageAlt ?? `Aperçu du projet ${p.titre}`}
+                          width="640"
+                          height="480"
+                          loading="lazy"
+                          class="relative h-full w-full object-cover transition duration-700 group-hover:scale-110"
+                        />
+                      )}
+
+                      <span class="absolute left-4 top-4 z-10 rounded-full bg-white/85 px-3 py-1.5 font-inter text-[0.68rem] font-bold uppercase tracking-wide text-encre backdrop-blur">
+                        {p.typeLibelle}
+                      </span>
+                      <span class="absolute right-4 top-4 z-10 grid h-11 w-11 scale-75 place-items-center rounded-full bg-soleil text-encre opacity-0 shadow-lg transition duration-300 group-hover:scale-100 group-hover:opacity-100">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                          <path d="M7 17 17 7" />
+                          <path d="M7 7h10v10" />
+                        </svg>
+                      </span>
+                    </div>
+
+                    <div class="flex flex-1 flex-col p-6">
+                      <h3 class="font-outfit text-2xl font-bold">{p.titre}</h3>
+                      <ul class="mt-4 flex flex-wrap gap-2">
+                        {p.tags.map((tag) => (
+                          <li class={`rounded-full px-3 py-1 text-xs font-medium ${t.chip}`}>{tag}</li>
+                        ))}
+                      </ul>
+                      <p class="mt-auto flex items-center gap-2 pt-7 font-outfit text-sm font-bold">
+                        Voir le projet en détail
+                        <img
+                          src={icon("yellow_arrow")}
+                          alt=""
+                          width="16"
+                          height="16"
+                          class="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1.5"
+                        />
+                      </p>
+                    </div>
+                  </a>
+                </li>
+              );
+            })
+          }
+        </ul>
+
+        <!-- Aucun résultat -->
+        <p
+          data-vide
+          hidden
+          class="mt-12 rounded-3xl border border-dashed border-graphite/25 px-6 py-12 text-center text-graphite/70"
+        >
+          Aucun projet dans cette catégorie pour le moment.
+        </p>
+
+        {
+          projets.length === 0 && (
+            <p class="mt-12 rounded-3xl border border-dashed border-graphite/25 px-6 py-12 text-center text-graphite/70">
+              Aucun projet en base. Lance <code class="rounded bg-nuit/10 px-1.5 py-0.5">bun run db:seed</code> pour les
+              ajouter.
+            </p>
+          )
+        }
+      </div>
+    </section>
+
+    <!-- ======================= BANDEAU ======================= -->
+    <section class="pj-band relative isolate overflow-hidden bg-soleil text-encre">
+      <div aria-hidden="true" class="pj-honey-band pointer-events-none absolute inset-0 -z-10"></div>
+
+      <div class={`${container} flex items-center gap-6 py-14 sm:gap-10 sm:py-16`} data-reveal>
+        <svg
+          class="pj-arrow hidden h-14 w-20 shrink-0 text-cuivre sm:block"
+          viewBox="0 0 80 56"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="7"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M6 28h62"></path>
+          <path d="m50 8 20 20-20 20"></path>
+        </svg>
+
+        <div>
+          <h2 class="text-balance font-outfit text-3xl font-bold leading-tight sm:text-4xl">
+            Ce portfolio évolue avec ma pratique.
+          </h2>
+          <p class="mt-3 max-w-3xl leading-relaxed text-encre/80">
+            Les textes, maquettes et résultats sont des exemples éditables. Ils peuvent être enrichis avec de
+            nouveaux livrables, retours pédagogiques ou mesures dès qu’ils existent.
+          </p>
+        </div>
+      </div>
+    </section>
+  </div>
 </Layout>
+
+<style>
+  /* ---------- Nid d'abeilles ---------- */
+  .pj-honey {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='56' viewBox='0 0 100 56'%3E%3Cpath d='M66 28L50 0L16 0L0 28L16 56L50 56L66 28L100 28' fill='none' stroke='white' stroke-opacity='.06'/%3E%3Cpath d='M0 28L34 28L50 0L84 0L100 28L84 56L50 56L34 28' fill='none' stroke='white' stroke-opacity='.06'/%3E%3C/svg%3E");
+    background-size: 120px 67px;
+    mask-image: radial-gradient(ellipse at 75% 40%, #000 0%, transparent 75%);
+  }
+  .pj-honey-band {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='56' viewBox='0 0 100 56'%3E%3Cpath d='M66 28L50 0L16 0L0 28L16 56L50 56L66 28L100 28' fill='none' stroke='%230f0f0f' stroke-opacity='.1'/%3E%3Cpath d='M0 28L34 28L50 0L84 0L100 28L84 56L50 56L34 28' fill='none' stroke='%230f0f0f' stroke-opacity='.1'/%3E%3C/svg%3E");
+    background-size: 120px 67px;
+    mask-image: radial-gradient(ellipse at 85% 50%, #000 0%, transparent 75%);
+  }
+
+  /* ---------- Texte ---------- */
+  .pj-grad {
+    background: linear-gradient(100deg, var(--color-miel), var(--color-soleil) 50%, var(--color-safran));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* ---------- Boutons de tri ---------- */
+  .pj-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.65rem 1.25rem;
+    border: 1px solid transparent;
+    border-radius: 9999px;
+    font-family: var(--font-inter);
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: rgb(63 63 63 / 0.7);
+    transition:
+      background-color 0.3s ease,
+      color 0.3s ease,
+      border-color 0.3s ease,
+      transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 0.3s ease;
+  }
+  .pj-chip:hover {
+    color: var(--color-encre);
+    background: color-mix(in srgb, var(--color-miel) 40%, transparent);
+    transform: translateY(-2px);
+  }
+  .pj-chip.is-active {
+    color: var(--color-encre);
+    font-weight: 600;
+    background: var(--color-soleil);
+    box-shadow: 0 8px 18px -8px color-mix(in srgb, var(--color-soleil) 80%, transparent);
+  }
+  .pj-chip:focus-visible {
+    outline: 2px solid var(--color-nuit);
+    outline-offset: 3px;
+  }
+
+  /* ---------- Lueurs / flottement ---------- */
+  .pj-drift {
+    animation: pj-drift 16s ease-in-out infinite;
+  }
+  .pj-drift-rev {
+    animation-direction: reverse;
+    animation-delay: -8s;
+  }
+  @keyframes pj-drift {
+    0%,
+    100% {
+      transform: translate3d(0, 0, 0);
+    }
+    50% {
+      transform: translate3d(40px, 18px, 0);
+    }
+  }
+
+  .pj-float {
+    animation: pj-float 9s ease-in-out infinite;
+    animation-delay: var(--d, 0s);
+  }
+  @keyframes pj-float {
+    0%,
+    100% {
+      transform: translate3d(0, 0, 0) rotate(var(--r, 0deg));
+    }
+    50% {
+      transform: translate3d(0, -10px, 0) rotate(var(--r, 0deg));
+    }
+  }
+
+  .pj-arrow {
+    animation: pj-nudge 2.4s ease-in-out infinite;
+  }
+  @keyframes pj-nudge {
+    0%,
+    100% {
+      transform: translateX(0);
+    }
+    50% {
+      transform: translateX(8px);
+    }
+  }
+
+  /* ---------- Apparition du hero au chargement ---------- */
+  .pj-in {
+    animation: pj-in 0.95s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: calc(var(--i, 0) * 100ms + 120ms);
+  }
+  @keyframes pj-in {
+    from {
+      opacity: 0;
+      transform: translateY(26px);
+    }
+  }
+
+  /* ---------- Apparition au scroll et à chaque changement de tri ---------- */
+  .pj-ready [data-reveal] {
+    opacity: 0;
+    transform: translateY(32px);
+    transition:
+      opacity 0.8s ease,
+      transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+    transition-delay: var(--d, 0ms);
+  }
+  .pj-ready [data-reveal].is-in {
+    opacity: 1;
+    transform: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation: none !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+</style>
+
+<script>
+  const root = document.getElementById("pj");
+
+  if (root) {
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    const chips = root.querySelectorAll<HTMLAnchorElement>("[data-filtre]");
+    const cartes = root.querySelectorAll<HTMLElement>("[data-projet]");
+    const vide = root.querySelector<HTMLElement>("[data-vide]");
+    const annonce = root.querySelector<HTMLElement>("[data-annonce]");
+
+    // ----- Apparition au scroll (sans JS ou animations réduites : tout reste visible) -----
+    let reveal: IntersectionObserver | null = null;
+    if (!reduceMotion && "IntersectionObserver" in window) {
+      root.classList.add("pj-ready");
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("is-in");
+              observer.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.12, rootMargin: "0px 0px -6% 0px" },
+      );
+      root.querySelectorAll("[data-reveal]").forEach((el) => observer.observe(el));
+      reveal = observer;
+    }
+
+    // ----- Tri par catégorie -----
+    function appliquer(id: string) {
+      let affiches = 0;
+
+      chips.forEach((chip) => {
+        const actif = chip.dataset.filtre === id;
+        chip.classList.toggle("is-active", actif);
+        if (actif) chip.setAttribute("aria-current", "true");
+        else chip.removeAttribute("aria-current");
+      });
+
+      cartes.forEach((carte) => {
+        const categories = (carte.dataset.categories ?? "").split(" ");
+        const montrer = id === "tous" || categories.includes(id);
+
+        if (montrer && carte.hidden && reveal) {
+          // carte qui réapparaît : on rejoue son animation d'entrée, en cascade
+          carte.classList.remove("is-in");
+          carte.style.setProperty("--d", `${affiches * 90}ms`);
+          reveal.observe(carte);
+        }
+
+        carte.hidden = !montrer;
+        if (montrer) affiches++;
+      });
+
+      if (vide) vide.hidden = affiches !== 0;
+      if (annonce) annonce.textContent = `${affiches} projet${affiches > 1 ? "s" : ""} affiché${affiches > 1 ? "s" : ""}`;
+
+      const url = id === "tous" ? window.location.pathname : `${window.location.pathname}?categorie=${encodeURIComponent(id)}`;
+      window.history.replaceState(null, "", url);
+    }
+
+    chips.forEach((chip) => {
+      chip.addEventListener("click", (e) => {
+        // clic avec Ctrl / Cmd / molette : on laisse le navigateur ouvrir le lien
+        if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+        e.preventDefault();
+        appliquer(chip.dataset.filtre ?? "tous");
+      });
+    });
+
+    // ----- Image manquante : on garde le visuel de secours -----
+    root.querySelectorAll<HTMLImageElement>("img[data-cover]").forEach((img) => {
+      const masquer = () => {
+        img.hidden = true;
+      };
+      img.addEventListener("error", masquer, { once: true });
+      if (img.complete && img.naturalWidth === 0 && img.currentSrc) masquer();
+    });
+  }
+</script>
