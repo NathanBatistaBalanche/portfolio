@@ -1,7 +1,279 @@
 ---
-import Layout from '../layouts/Layout.astro';
+/**
+ * src/pages/contact.astro
+ * Page de contact : le formulaire envoie vers /api/contact, qui enregistre dans la table `messages`.
+ * Même DA que la page d'accueil (nuit / soleil / miel, nid d'abeilles, Outfit + Inter).
+ */
+import Layout from "../layouts/Layout.astro";
+import Hexagon from "../components/Hexagon.astro";
+
+export const prerender = false;
+
+const icon = (name: string) => `/icons/${name}.svg`;
+
+// Retour du formulaire envoyé sans JavaScript
+const envoye = Astro.url.searchParams.get("envoye") === "1";
+const erreur = Astro.url.searchParams.get("erreur");
+
+const container = "mx-auto w-full max-w-7xl px-5 sm:px-8";
+const eyebrow = "flex items-center gap-3 font-inter text-xs font-bold uppercase tracking-[0.14em] text-soleil";
+const btnBase =
+  "group relative isolate inline-flex items-center justify-center gap-3 overflow-hidden rounded-xl px-6 py-3.5 font-outfit text-sm font-bold transition duration-300 hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-soleil";
+const btnYellow = `${btnBase} ct-shine bg-linear-to-br from-miel via-soleil to-safran text-encre shadow-lg shadow-soleil/25 hover:shadow-xl hover:shadow-soleil/40 disabled:cursor-wait disabled:opacity-70`;
+
+const label = "block font-outfit text-sm font-bold text-nuit";
+const champ =
+  "mt-2 w-full rounded-xl border border-graphite/20 bg-neige/60 px-4 py-3 font-inter text-sm text-encre placeholder:text-graphite/40 transition duration-200 focus:border-soleil focus:bg-white focus:outline-none focus:ring-4 focus:ring-soleil/25";
+
+const sujets = ["Stage", "Alternance", "Premier emploi", "Projet web", "Autre"];
 ---
 
 <Layout>
-	<p></p>
+  <div id="ct">
+    <section class="relative isolate overflow-hidden bg-nuit text-neige">
+      <div aria-hidden="true" class="pointer-events-none absolute inset-0 -z-10">
+        <div class="ct-honey absolute inset-0"></div>
+        <div class="ct-drift absolute -left-32 top-0 h-96 w-96 rounded-full bg-soleil/15 blur-3xl"></div>
+        <div class="ct-drift ct-drift-rev absolute -right-24 bottom-0 h-[28rem] w-[28rem] rounded-full bg-azur/30 blur-3xl"></div>
+      </div>
+
+      <div class={`${container} grid items-start gap-14 py-20 sm:py-28 lg:grid-cols-[2fr_3fr] lg:gap-20`}>
+        <!-- Texte -->
+        <div class="lg:sticky lg:top-32">
+          <p class={eyebrow}>
+            <Hexagon class="w-3.5" fill="var(--color-soleil)" />
+            Contact
+          </p>
+          <h1 class="mt-5 text-balance font-outfit text-4xl font-light leading-[1.08] tracking-tight sm:text-5xl lg:text-6xl">
+            Parlons de votre <span class="ct-grad font-medium">projet.</span>
+          </h1>
+          <p class="mt-6 max-w-md leading-relaxed text-neige/80">
+            Un stage, une alternance, un premier emploi ou une idée de site : écris-moi quelques lignes, je reviens vers
+            toi rapidement.
+          </p>
+
+          <p class="mt-10 inline-flex items-center gap-3 rounded-full border border-white/10 bg-abysse/80 px-4 py-2 font-inter text-xs text-neige/90 backdrop-blur">
+            <span class="ct-ping h-2.5 w-2.5 rounded-full bg-soleil"></span>
+            Réponse habituelle sous 48 h
+          </p>
+
+          <div aria-hidden="true" class="mt-12 hidden w-56 lg:block">
+            <Hexagon class="ct-float block w-24" fill="var(--color-soleil)" />
+          </div>
+        </div>
+
+        <!-- Formulaire -->
+        <div class="relative">
+          <div aria-hidden="true" class="absolute -right-3 -top-3 h-full w-full rounded-[2rem] border border-soleil/40 sm:-right-5 sm:-top-5"></div>
+
+          <div class="relative rounded-[2rem] bg-white p-6 text-encre shadow-2xl shadow-black/40 sm:p-10">
+            <!-- Message de confirmation (affiché aussi par le script) -->
+            <div
+              id="ct-succes"
+              role="status"
+              tabindex="-1"
+              class:list={["text-center py-10", !envoye && "hidden"]}
+            >
+              <Hexagon class="mx-auto w-16" fill="var(--color-soleil)" />
+              <h2 class="mt-6 font-outfit text-2xl font-bold text-nuit">Message envoyé</h2>
+              <p class="mx-auto mt-3 max-w-sm text-sm leading-relaxed text-graphite/70">
+                Merci ! Je lis ton message et je te réponds sous 48 h.
+              </p>
+              <a href="/projets" class={`${btnYellow} mt-8`}>Voir mes projets</a>
+            </div>
+
+            <form
+              id="ct-form"
+              method="post"
+              action="/api/contact"
+              novalidate
+              class:list={["space-y-6", envoye && "hidden"]}
+            >
+              <div class="grid gap-6 sm:grid-cols-2">
+                <div>
+                  <label for="nom" class={label}>Nom</label>
+                  <input id="nom" name="nom" type="text" required maxlength="100" autocomplete="name" placeholder="Camille Martin" class={champ} />
+                </div>
+                <div>
+                  <label for="email" class={label}>Email</label>
+                  <input id="email" name="email" type="email" required maxlength="254" autocomplete="email" placeholder="camille@exemple.fr" class={champ} />
+                </div>
+              </div>
+
+              <div>
+                <label for="sujet" class={label}>Sujet <span class="font-inter text-xs font-normal text-graphite/50">(facultatif)</span></label>
+                <input id="sujet" name="sujet" type="text" maxlength="150" list="sujets" placeholder="Stage, alternance, projet web…" class={champ} />
+                <datalist id="sujets">
+                  {sujets.map((s) => <option value={s} />)}
+                </datalist>
+              </div>
+
+              <div>
+                <div class="flex items-end justify-between">
+                  <label for="message" class={label}>Message</label>
+                  <span id="ct-compteur" class="font-inter text-xs text-graphite/50" aria-hidden="true">0 / 5000</span>
+                </div>
+                <textarea id="message" name="message" required maxlength="5000" rows="6" placeholder="Dis-moi en quelques lignes ce que tu cherches." class={`${champ} resize-y`}></textarea>
+              </div>
+
+              <!-- Champ piège anti-robots : ne pas remplir -->
+              <div aria-hidden="true" class="absolute -left-[9999px] h-0 w-0 overflow-hidden">
+                <label for="site_web">Ne pas remplir</label>
+                <input id="site_web" name="site_web" type="text" tabindex="-1" autocomplete="off" />
+              </div>
+
+              <p
+                id="ct-erreur"
+                role="alert"
+                class:list={[
+                  "rounded-xl border border-cuivre/40 bg-miel/30 px-4 py-3 text-sm font-medium text-encre",
+                  !erreur && "hidden",
+                ]}
+              >
+                {erreur}
+              </p>
+
+              <div class="flex flex-wrap items-center gap-4">
+                <button type="submit" id="ct-bouton" class={btnYellow}>
+                  <span id="ct-bouton-texte">Envoyer le message</span>
+                  <img src={icon("arrow_bottom")} alt="" width="16" height="16" class="h-4 w-4 -rotate-90 transition-transform duration-300 group-hover:translate-x-0.5" />
+                </button>
+                <p class="text-xs text-graphite/55">Tes informations ne servent qu'à te répondre.</p>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
 </Layout>
+
+<style>
+  .ct-honey {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='56' viewBox='0 0 100 56'%3E%3Cpath d='M66 28L50 0L16 0L0 28L16 56L50 56L66 28L100 28' fill='none' stroke='white' stroke-opacity='.06'/%3E%3Cpath d='M0 28L34 28L50 0L84 0L100 28L84 56L50 56L34 28' fill='none' stroke='white' stroke-opacity='.06'/%3E%3C/svg%3E");
+    background-size: 120px 67px;
+    mask-image: radial-gradient(ellipse at 70% 40%, #000 0%, transparent 75%);
+  }
+  .ct-grad {
+    background: linear-gradient(100deg, var(--color-miel), var(--color-soleil) 50%, var(--color-safran));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .ct-drift {
+    animation: ct-drift 16s ease-in-out infinite;
+  }
+  .ct-drift-rev {
+    animation-direction: reverse;
+    animation-delay: -8s;
+  }
+  @keyframes ct-drift {
+    0%, 100% { transform: translate3d(0, 0, 0); }
+    50% { transform: translate3d(40px, 18px, 0); }
+  }
+  .ct-float {
+    animation: ct-float 9s ease-in-out infinite;
+  }
+  @keyframes ct-float {
+    0%, 100% { transform: translate3d(0, 0, 0) rotate(-6deg); }
+    50% { transform: translate3d(0, -14px, 0) rotate(1deg); }
+  }
+  .ct-ping {
+    animation: ct-ping 1.8s ease-out infinite;
+  }
+  @keyframes ct-ping {
+    0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-soleil) 70%, transparent); }
+    100% { box-shadow: 0 0 0 10px transparent; }
+  }
+  .ct-shine::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: -1;
+    width: 40%;
+    background: linear-gradient(100deg, transparent, rgb(255 255 255 / 0.5), transparent);
+    transform: translateX(-220%) skewX(-20deg);
+    transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .ct-shine:hover::before,
+  .ct-shine:focus-visible::before {
+    transform: translateX(520%) skewX(-20deg);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation: none !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+</style>
+
+<script>
+  const form = document.getElementById("ct-form") as HTMLFormElement | null;
+  const succes = document.getElementById("ct-succes");
+  const erreur = document.getElementById("ct-erreur");
+  const bouton = document.getElementById("ct-bouton") as HTMLButtonElement | null;
+  const texteBouton = document.getElementById("ct-bouton-texte");
+  const message = document.getElementById("message") as HTMLTextAreaElement | null;
+  const compteur = document.getElementById("ct-compteur");
+
+  message?.addEventListener("input", () => {
+    if (compteur) compteur.textContent = `${message.value.length} / 5000`;
+  });
+
+  function afficherErreur(texte: string) {
+    if (!erreur) return;
+    erreur.textContent = texte;
+    erreur.classList.remove("hidden");
+  }
+
+  form?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    erreur?.classList.add("hidden");
+
+    // Vérification avant envoi (le serveur revérifie de toute façon)
+    const email = form.elements.namedItem("email") as HTMLInputElement;
+    if (!form.nom.value.trim() || !email.value.trim() || !message?.value.trim()) {
+      return afficherErreur("Le nom, l'email et le message sont obligatoires.");
+    }
+    if (!email.validity.valid) return afficherErreur("L'adresse email n'est pas valide.");
+
+    if (bouton) bouton.disabled = true;
+    if (texteBouton) texteBouton.textContent = "Envoi en cours…";
+
+    try {
+      const reponse = await fetch(form.action, {
+        method: "POST",
+        headers: { Accept: "application/json" },
+        body: new FormData(form),
+      });
+      let resultat: { ok: boolean; message: string } | null = null;
+      try {
+        resultat = await reponse.json();
+      } catch {
+        // Le serveur a répondu autre chose que du JSON (page d'erreur, route introuvable…)
+      }
+
+      if (!resultat) {
+        afficherErreur(`Le serveur a répondu avec une erreur (code ${reponse.status}). Regarde le terminal pour le détail.`);
+        return;
+      }
+      if (!resultat.ok) {
+        afficherErreur(resultat.message);
+        return;
+      }
+
+      form.reset();
+      if (compteur) compteur.textContent = "0 / 5000";
+      form.classList.add("hidden");
+      succes?.classList.remove("hidden");
+      succes?.focus();
+    } catch {
+      afficherErreur("Impossible d'envoyer le message. Vérifie ta connexion et réessaie.");
+    } finally {
+      if (bouton) bouton.disabled = false;
+      if (texteBouton) texteBouton.textContent = "Envoyer le message";
+    }
+  });
+</script>
