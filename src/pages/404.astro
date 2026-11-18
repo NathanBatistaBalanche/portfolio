@@ -1,0 +1,399 @@
+---
+/**
+ * src/pages/404.astro
+ * Page d'erreur 404 : boussole « perdue » animée, nid d'abeilles flottant, accès rapides.
+ * Le Header et le Footer sont dans le Layout.
+ *
+ * ⚠️ Si des classes Tailwind semblent ignorées après ajout du fichier, redémarre le serveur de dev.
+ */
+import Layout from "../layouts/Layout.astro";
+import Hexagon from "../components/Hexagon.astro";
+
+// Accès rapides : uniquement des pages qui existent sur le site
+const quickLinks = [
+  { label: "Projets", text: "Mes réalisations", href: "/projets" },
+  { label: "À propos", text: "Qui je suis", href: "/a-propos" },
+  { label: "Parcours", text: "Mon cheminement", href: "/parcours" },
+  { label: "Contact", text: "Discutons-en", href: "/contact" },
+];
+
+// Hexagones flottants de la carte (positions en %, tailles en rem)
+const floaters = [
+  { x: "7%", y: "14%", w: "4.8rem", fill: "rgb(255 255 255 / 0.55)", stroke: "none", d: "0s", r: "-8deg" },
+  { x: "76%", y: "9%", w: "3.2rem", fill: "var(--color-nuit)", stroke: "none", d: "-3s", r: "10deg" },
+  { x: "84%", y: "62%", w: "5.4rem", fill: "transparent", stroke: "var(--color-nuit)", d: "-6s", r: "0deg" },
+  { x: "5%", y: "66%", w: "3.6rem", fill: "var(--color-cuivre)", stroke: "none", d: "-2s", r: "14deg" },
+  { x: "56%", y: "80%", w: "2.4rem", fill: "rgb(255 255 255 / 0.7)", stroke: "none", d: "-5s", r: "-12deg" },
+];
+
+const container = "mx-auto w-full max-w-7xl px-5 sm:px-8";
+---
+
+<Layout>
+  <section class="relative isolate overflow-hidden bg-neige text-nuit" aria-labelledby="notfound-title">
+    <!-- Décor de page -->
+    <div aria-hidden="true" class="pointer-events-none absolute inset-0 -z-10">
+      <div class="nf-bg absolute inset-0"></div>
+      <div class="absolute -left-32 top-0 h-96 w-96 rounded-full bg-soleil/25 blur-3xl"></div>
+      <div class="absolute -bottom-40 right-0 h-96 w-96 rounded-full bg-azur/10 blur-3xl"></div>
+    </div>
+
+    <div class={`${container} grid items-center gap-14 py-16 sm:py-24 lg:grid-cols-[5fr_6fr] lg:gap-20 lg:py-28`}>
+      <!-- ======================= CARTE 404 ======================= -->
+      <div class="nf-pop mx-auto w-full max-w-xl lg:max-w-none">
+        <div
+          role="img"
+          aria-label="Erreur 404"
+          class="nf-card relative isolate flex aspect-[8/7] w-full flex-col items-center justify-center overflow-hidden rounded-[2.5rem]"
+        >
+          <!-- Nid d'abeilles en filigrane -->
+          <div aria-hidden="true" class="nf-card-pattern absolute inset-0 -z-10"></div>
+
+          <!-- Hexagones flottants -->
+          {
+            floaters.map((f) => (
+              <span
+                aria-hidden="true"
+                class="nf-float absolute -z-0"
+                style={`left:${f.x};top:${f.y};width:${f.w};--d:${f.d};--r:${f.r}`}
+              >
+                <Hexagon class="block w-full" fill={f.fill} stroke={f.stroke} strokeWidth={3} />
+              </span>
+            ))
+          }
+
+          <!-- Badge « signal perdu » -->
+          <p
+            aria-hidden="true"
+            class="absolute left-5 top-5 inline-flex items-center gap-2.5 rounded-full bg-nuit/90 px-4 py-2 font-inter text-xs font-semibold uppercase tracking-[0.14em] text-neige sm:left-7 sm:top-7"
+          >
+            <span class="nf-ping h-2.5 w-2.5 rounded-full bg-soleil"></span>
+            Signal perdu
+          </p>
+
+          <!-- 4 · boussole · 4 -->
+          <div aria-hidden="true" class="nf-digits relative z-10 flex items-center font-outfit font-extrabold leading-none text-nuit">
+            <span>4</span>
+            <svg viewBox="0 0 100 86.6" class="nf-compass mx-[0.03em] overflow-visible" width="90" height="78">
+              <polygon points="25,0 75,0 100,43.3 75,86.6 25,86.6 0,43.3" fill="var(--color-nuit)"></polygon>
+              <circle cx="50" cy="43.3" r="31" fill="none" stroke="var(--color-soleil)" stroke-width="3"></circle>
+              <g stroke="var(--color-miel)" stroke-width="2.4" stroke-linecap="round">
+                <line x1="50" y1="9" x2="50" y2="15"></line>
+                <line x1="50" y1="71.6" x2="50" y2="77.6"></line>
+                <line x1="16" y1="43.3" x2="22" y2="43.3"></line>
+                <line x1="78" y1="43.3" x2="84" y2="43.3"></line>
+              </g>
+              <g class="nf-needle">
+                <polygon points="50,19 43,43.3 57,43.3" fill="var(--color-soleil)"></polygon>
+                <polygon points="50,67.6 43,43.3 57,43.3" fill="var(--color-neige)" fill-opacity="0.8"></polygon>
+              </g>
+              <circle cx="50" cy="43.3" r="4.2" fill="var(--color-cuivre)" stroke="var(--color-nuit)" stroke-width="1.6"></circle>
+            </svg>
+            <span>4</span>
+          </div>
+
+          <p
+            aria-hidden="true"
+            class="relative z-10 mt-6 inline-flex items-center gap-3 rounded-full bg-white/70 px-5 py-2.5 font-inter text-sm font-semibold uppercase tracking-[0.12em] text-nuit backdrop-blur-sm sm:text-base"
+          >
+            <Hexagon class="w-4 shrink-0" fill="var(--color-cuivre)" />
+            Hors du parcours
+          </p>
+        </div>
+      </div>
+
+      <!-- ======================= TEXTE ======================= -->
+      <div>
+        <p class="nf-rise flex items-center gap-3 font-inter text-sm font-bold uppercase tracking-[0.14em] text-cuivre" style="--i:0">
+          <Hexagon class="w-4" fill="var(--color-soleil)" />
+          Page introuvable
+        </p>
+
+        <h1
+          id="notfound-title"
+          class="nf-rise mt-6 max-w-3xl font-outfit text-4xl font-light leading-[1.1] tracking-tight text-nuit sm:text-5xl lg:text-6xl"
+          style="--i:1"
+        >
+          Cette page a pris un{" "}
+          <span class="relative inline-block font-medium text-cuivre">
+            autre chemin
+            <svg
+              viewBox="0 0 200 12"
+              preserveAspectRatio="none"
+              class="absolute inset-x-0 -bottom-2 h-3 w-full text-soleil"
+              width="200"
+              height="12"
+              aria-hidden="true"
+            >
+              <path
+                class="nf-draw"
+                d="M2 8 C 30 0, 50 12, 80 6 S 130 2, 160 8 S 190 6, 198 4"
+                pathLength="1"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="4"
+                stroke-linecap="round"></path>
+            </svg>
+          </span>.
+        </h1>
+
+        <p class="nf-rise mt-8 max-w-xl text-lg leading-relaxed text-graphite/65" style="--i:2">
+          Le lien est peut-être ancien ou incomplet. Revenez à l’accueil, explorez les projets sélectionnés ou
+          contactez-moi si vous cherchez un contenu précis.
+        </p>
+
+        <div class="nf-rise nf-actions mt-10 flex flex-wrap gap-4" style="--i:3">
+          <a
+            href="/"
+            class="nf-btn nf-cta group relative isolate inline-flex items-center gap-3 overflow-hidden rounded-full bg-nuit px-7 py-4 font-outfit text-base font-bold text-neige shadow-lg shadow-nuit/25 transition duration-300 hover:-translate-y-0.5 hover:bg-abysse hover:shadow-xl hover:shadow-nuit/30 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-soleil sm:text-lg"
+          >
+            Retour à l’accueil
+            <svg
+              class="h-5 w-5 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M7 17 17 7"></path>
+              <path d="M7 7h10v10"></path>
+            </svg>
+          </a>
+
+          <a
+            href="/projets"
+            class="nf-cta group inline-flex items-center gap-3 rounded-full border-2 border-nuit/70 px-7 py-4 font-outfit text-base font-bold text-nuit transition duration-300 hover:-translate-y-0.5 hover:border-nuit hover:bg-nuit hover:text-neige focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-soleil sm:text-lg"
+          >
+            Voir les projets
+            <svg
+              class="h-5 w-5 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M7 17 17 7"></path>
+              <path d="M7 7h10v10"></path>
+            </svg>
+          </a>
+        </div>
+
+        <!-- Accès rapides -->
+        <nav aria-label="Accès rapides" class="nf-quick mt-14">
+          <p class="nf-rise font-inter text-sm font-bold uppercase tracking-[0.14em] text-cuivre" style="--i:4">
+            Accès rapides
+          </p>
+          <ul class="mt-4 grid gap-3 sm:grid-cols-2">
+            {
+              quickLinks.map((l, i) => (
+                <li class="nf-rise" style={`--i:${i + 5}`}>
+                  <a
+                    href={l.href}
+                    class="group flex items-center justify-between gap-4 rounded-2xl bg-white px-5 py-4 ring-1 ring-black/5 transition duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-nuit/10 hover:ring-soleil focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-soleil"
+                  >
+                    <span>
+                      <span class="block font-outfit text-base font-bold text-encre">{l.label}</span>
+                      <span class="mt-0.5 block text-sm text-graphite/55">{l.text}</span>
+                    </span>
+                    <span class="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-neige text-nuit transition-colors duration-300 group-hover:bg-soleil">
+                      <svg
+                        class="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2.4"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        aria-hidden="true"
+                      >
+                        <path d="M5 12h14"></path>
+                        <path d="m13 6 6 6-6 6"></path>
+                      </svg>
+                    </span>
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  /* ---------- Décor : nid d'abeilles ---------- */
+  .nf-bg {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='56' viewBox='0 0 100 56'%3E%3Cpath d='M66 28L50 0L16 0L0 28L16 56L50 56L66 28L100 28' fill='none' stroke='%2311273b' stroke-opacity='.07'/%3E%3Cpath d='M0 28L34 28L50 0L84 0L100 28L84 56L50 56L34 28' fill='none' stroke='%2311273b' stroke-opacity='.07'/%3E%3C/svg%3E");
+    mask-image: radial-gradient(ellipse at 25% 45%, #000 5%, transparent 70%);
+  }
+
+  /* ---------- Carte ---------- */
+  .nf-card {
+    container-type: inline-size;
+    aspect-ratio: 8 / 7;
+    padding: 4.5rem 1.5rem; /* marge haut/bas : le texte ne touche plus les bords */
+    background:
+      radial-gradient(120% 90% at 20% 0%, var(--color-miel) 0%, transparent 60%),
+      linear-gradient(145deg, var(--color-soleil) 0%, var(--color-safran) 130%);
+    box-shadow:
+      inset 0 0 0 1px rgb(255 255 255 / 0.35),
+      0 40px 80px -30px color-mix(in srgb, var(--color-cuivre) 70%, transparent);
+  }
+  .nf-card-pattern {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='56' viewBox='0 0 100 56'%3E%3Cpath d='M66 28L50 0L16 0L0 28L16 56L50 56L66 28L100 28' fill='none' stroke='white' stroke-opacity='.4'/%3E%3Cpath d='M0 28L34 28L50 0L84 0L100 28L84 56L50 56L34 28' fill='none' stroke='white' stroke-opacity='.4'/%3E%3C/svg%3E");
+    background-size: 120px 67px;
+    mask-image: radial-gradient(ellipse at 50% 50%, #000 0%, transparent 75%);
+  }
+
+  /* ---------- Boutons : marges latérales généreuses ---------- */
+  .nf-cta {
+    padding: 1.1rem 2.25rem;
+    gap: 0.9rem;
+  }
+  .nf-actions {
+    margin-top: 2.5rem;
+    gap: 1rem;
+  }
+  .nf-quick {
+    margin-top: 3.5rem;
+  }
+
+  /* Taille du « 404 » proportionnelle à la largeur de la carte */
+  .nf-digits {
+    font-size: 30cqw;
+    letter-spacing: -0.02em;
+  }
+  .nf-compass {
+    width: 0.9em;
+    height: auto;
+    filter: drop-shadow(0 0.04em 0.06em rgb(0 0 0 / 0.25));
+  }
+
+  /* ---------- Animations ---------- */
+  .nf-needle {
+    transform-origin: 50px 43.3px;
+    animation: nf-search 9s ease-in-out infinite;
+  }
+  @keyframes nf-search {
+    0% {
+      transform: rotate(20deg);
+    }
+    20% {
+      transform: rotate(-65deg);
+    }
+    40% {
+      transform: rotate(80deg);
+    }
+    60% {
+      transform: rotate(-35deg);
+    }
+    80% {
+      transform: rotate(45deg);
+    }
+    100% {
+      transform: rotate(20deg);
+    }
+  }
+
+  .nf-float {
+    animation: nf-float 9s ease-in-out infinite;
+    animation-delay: var(--d, 0s);
+    transform: rotate(var(--r, 0deg));
+  }
+  @keyframes nf-float {
+    0%,
+    100% {
+      transform: translate3d(0, 0, 0) rotate(var(--r, 0deg));
+    }
+    50% {
+      transform: translate3d(0, -14px, 0) rotate(calc(var(--r, 0deg) + 8deg));
+    }
+  }
+
+  .nf-ping {
+    animation: nf-ping 1.8s ease-out infinite;
+  }
+  @keyframes nf-ping {
+    0% {
+      box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-soleil) 70%, transparent);
+    }
+    100% {
+      box-shadow: 0 0 0 10px transparent;
+    }
+  }
+
+  .nf-pop {
+    animation: nf-pop 1s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  @keyframes nf-pop {
+    from {
+      opacity: 0;
+      transform: translateY(24px) scale(0.94) rotate(-2deg);
+    }
+  }
+
+  .nf-rise {
+    animation: nf-rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: calc(var(--i, 0) * 90ms + 200ms);
+  }
+  @keyframes nf-rise {
+    from {
+      opacity: 0;
+      transform: translateY(22px);
+    }
+  }
+
+  .nf-draw {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: nf-draw 1.1s 0.9s ease forwards;
+  }
+  @keyframes nf-draw {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  /* Reflet qui traverse le bouton principal (même signature que le CTA du footer) */
+  .nf-btn::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: -1;
+    width: 40%;
+    background: linear-gradient(100deg, transparent, rgb(255 255 255 / 0.28), transparent);
+    transform: translateX(-220%) skewX(-20deg);
+    transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .nf-btn:hover::before,
+  .nf-btn:focus-visible::before {
+    transform: translateX(520%) skewX(-20deg);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation: none !important;
+      transition-duration: 0.01ms !important;
+    }
+    .nf-draw {
+      stroke-dashoffset: 0;
+    }
+  }
+</style>
