@@ -1,10 +1,18 @@
 ---
+/**
+ * src/pages/politique-de-confidentialite.astro
+ * Politique de confidentialité (RGPD). Header et Footer sont dans le Layout.
+ *
+ * ⚠️ À VÉRIFIER AVANT MISE EN LIGNE : `config.host` (nom du fournisseur du VPS, comme dans les mentions légales)
+ * et `config.retention` (la suppression des messages après ce délai est à faire à la main ou à automatiser).
+ */
 import Layout from "../layouts/Layout.astro";
 import Hexagon from "../components/Hexagon.astro";
 
 // ---------- À COMPLÉTER ----------
 const config = {
   lastUpdate: "19 novembre 2026",
+  isoDate: "2026-11-19",
   name: "Nathan Batista Balanche",
   city: "Montbéliard (France)",
   email: "batistabalanchenathan@gmail.com",
@@ -28,7 +36,7 @@ const sections = [
 const treatments = [
   {
     name: "Messages de contact",
-    data: "Nom, adresse e-mail, contenu du message",
+    data: "Nom, adresse e-mail, sujet (facultatif), contenu du message",
     purpose: "Répondre à votre demande ou à votre proposition",
     basis: "Intérêt légitime (répondre aux sollicitations reçues)",
     duration: `Le temps de l’échange, puis ${config.retention} maximum après le dernier contact`,
@@ -74,64 +82,72 @@ const rights = [
   ["Droit à la limitation", "demander le gel temporaire du traitement de vos données."],
   ["Droit d’opposition", "vous opposer, pour des raisons tenant à votre situation, à un traitement fondé sur l’intérêt légitime."],
   ["Droit à la portabilité", "récupérer, dans un format structuré, les données que vous m’avez fournies, lorsque ce droit s’applique."],
+  ["Directives post-mortem", "définir le sort de vos données après votre décès."],
 ];
 
 // Classes réutilisables
 const container = "mx-auto w-full max-w-7xl px-5 sm:px-8";
-const h2 = "flex items-baseline gap-4 font-outfit text-2xl font-bold leading-tight text-encre sm:text-3xl";
-const num = "font-outfit text-lg font-bold text-cuivre";
-const p = "mt-4 leading-relaxed text-graphite/80";
-const ul = "mt-4 flex flex-col gap-2 pl-5 list-disc marker:text-soleil text-graphite/80 leading-relaxed";
+const h2 = "flex items-center gap-4 font-outfit text-2xl font-bold leading-tight text-encre sm:text-3xl";
+const num =
+  "pv-hex grid h-[2.598rem] w-12 shrink-0 place-items-center bg-nuit font-outfit text-sm font-bold text-soleil";
+const p = "mt-5 leading-relaxed text-graphite/80";
+const ul = "mt-5 flex flex-col gap-2 pl-5 list-disc marker:text-soleil text-graphite/80 leading-relaxed";
 const link =
   "font-medium text-azur underline decoration-azur/30 underline-offset-4 transition-colors hover:text-nuit hover:decoration-soleil focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-soleil";
-const section = "scroll-mt-28 border-t border-graphite/10 pt-10 first:border-t-0 first:pt-0";
+const section = "scroll-mt-28 rounded-3xl bg-white p-7 shadow-sm shadow-nuit/5 ring-1 ring-black/5 sm:p-10";
+const dlLabel = "font-inter text-[0.7rem] font-bold uppercase tracking-[0.14em] text-cuivre";
 ---
 
-<Layout>
+<Layout title="Politique de confidentialité — Nathan Batista Balanche">
   <!-- ======================= HERO ======================= -->
-  <section class="relative overflow-hidden bg-nuit text-neige" aria-labelledby="privacy-title">
+  <section class="relative isolate overflow-hidden bg-nuit text-neige" aria-labelledby="privacy-title">
+    <div aria-hidden="true" class="pointer-events-none absolute inset-0 -z-10">
+      <div class="pv-honey absolute inset-0"></div>
+      <div class="pv-drift absolute -left-32 top-0 h-96 w-96 rounded-full bg-soleil/15 blur-3xl"></div>
+      <div class="pv-drift pv-drift-rev absolute -right-24 bottom-0 h-[24rem] w-[24rem] rounded-full bg-azur/30 blur-3xl"></div>
+    </div>
+
     <div class={`${container} relative py-16 sm:py-24`}>
-      <p class="flex items-center gap-3 font-inter text-sm font-bold text-soleil">
-        <Hexagon class="w-4" fill="var(--color-soleil)" />
-        INFORMATIONS LÉGALES
+      <p class="pv-in inline-flex items-center gap-3 rounded-full border border-white/10 bg-abysse/80 px-4 py-2 font-inter text-xs text-neige/90 backdrop-blur" style="--i:0">
+        <span class="pv-ping h-2.5 w-2.5 rounded-full bg-soleil" aria-hidden="true"></span>
+        Dernière mise à jour : <time datetime={config.isoDate}>{config.lastUpdate}</time>
       </p>
 
-      <h1
-        id="privacy-title"
-        class="mt-6 max-w-3xl font-outfit text-5xl font-light leading-[1.08] tracking-tight sm:text-6xl"
-      >
-        Politique de confidentialité.
+      <h1 id="privacy-title" class="pv-in mt-8 max-w-4xl text-balance font-outfit text-5xl font-light leading-[1.08] tracking-tight sm:text-6xl lg:text-7xl" style="--i:1">
+        Politique de <span class="pv-grad font-medium">confidentialité.</span>
       </h1>
 
-      <p class="mt-6 max-w-2xl text-lg leading-relaxed text-neige/85">
+      <p class="pv-in mt-6 max-w-2xl text-base leading-relaxed text-neige/85 sm:text-lg" style="--i:2">
         Comment sont utilisées vos données personnelles lorsque vous visitez ce portfolio ou que vous me contactez, et
         comment exercer vos droits.
       </p>
 
-      <p class="mt-8 inline-flex items-center gap-2.5 rounded-full bg-abysse px-4 py-2 font-inter text-xs text-neige/90">
-        <span class="h-2.5 w-2.5 rounded-full bg-soleil" aria-hidden="true"></span>
-        Dernière mise à jour : <time datetime="2026-11-18">{config.lastUpdate}</time>
-      </p>
-
       <!-- Nid d'abeilles décoratif -->
-      <div class="absolute right-8 top-1/2 hidden h-[9.1rem] w-[13.1rem] -translate-y-1/2 lg:block xl:right-12" aria-hidden="true">
-        <Hexagon class="absolute left-0 top-[2.27rem] w-[5.25rem] scale-95" fill="var(--color-neige)" stroke="var(--color-abysse)" />
-        <Hexagon class="absolute left-[3.94rem] top-0 w-[5.25rem] scale-95" fill="var(--color-soleil)" />
-        <Hexagon class="absolute left-[7.88rem] top-[2.27rem] w-[5.25rem] scale-95" fill="var(--color-azur)" />
-        <Hexagon class="absolute left-[3.94rem] top-[4.55rem] w-[5.25rem] scale-95" fill="var(--color-neige)" stroke="var(--color-abysse)" />
+      <div class="pv-in absolute right-8 top-1/2 hidden h-[9.1rem] w-[13.1rem] -translate-y-1/2 lg:block xl:right-12" style="--i:3" aria-hidden="true">
+        <span class="pv-float absolute left-0 top-[2.27rem] w-[5.25rem]">
+          <Hexagon class="block w-full" fill="var(--color-neige)" />
+        </span>
+        <span class="pv-float absolute left-[3.94rem] top-0 w-[5.25rem] drop-shadow-xl" style="--d:-3s">
+          <Hexagon class="block w-full" fill="var(--color-soleil)" />
+        </span>
+        <span class="pv-float absolute left-[7.88rem] top-[2.27rem] w-[5.25rem]" style="--d:-6s">
+          <Hexagon class="block w-full" fill="var(--color-azur)" />
+        </span>
+        <span class="pv-float absolute left-[3.94rem] top-[4.55rem] w-[5.25rem]" style="--d:-9s">
+          <Hexagon class="block w-full" fill="var(--color-neige)" />
+        </span>
       </div>
     </div>
   </section>
 
   <!-- ======================= CONTENU ======================= -->
-  <div class="bg-neige text-nuit">
+  <div class="relative isolate overflow-hidden bg-neige text-nuit">
+    <div aria-hidden="true" class="pv-honey-light pointer-events-none absolute inset-0 -z-10"></div>
+
     <div class={`${container} grid gap-12 py-16 sm:py-24 lg:grid-cols-[19rem_1fr] lg:gap-16`}>
       <!-- Sommaire -->
       <aside class="lg:sticky lg:top-28 lg:self-start">
-        <nav
-          aria-label="Sommaire de la politique de confidentialité"
-          class="rounded-3xl bg-white p-6 shadow-sm shadow-nuit/5 ring-1 ring-black/5 sm:p-7"
-        >
+        <nav aria-label="Sommaire de la politique de confidentialité" class="rounded-3xl bg-white p-6 shadow-lg shadow-nuit/5 ring-1 ring-black/5 sm:p-7">
           <div class="flex items-center justify-between gap-3">
             <p class="flex items-center gap-3 font-inter text-xs font-bold uppercase tracking-[0.14em] text-cuivre">
               <Hexagon class="w-3.5" fill="var(--color-soleil)" />
@@ -188,8 +204,8 @@ const section = "scroll-mt-28 border-t border-graphite/10 pt-10 first:border-t-0
           <ul class="mt-5 grid gap-4 sm:grid-cols-3">
             {
               highlights.map((h) => (
-                <li class="flex flex-col rounded-3xl bg-white p-6 ring-1 ring-black/5 transition duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-nuit/10">
-                  <span class="flex h-12 w-12 items-center justify-center rounded-xl bg-miel text-encre">
+                <li class="group flex flex-col rounded-3xl bg-white p-6 shadow-sm shadow-nuit/5 ring-1 ring-black/5 transition duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-nuit/10">
+                  <span class="pv-hex grid h-[3.03rem] w-14 place-items-center bg-miel text-encre transition duration-500 group-hover:rotate-6 group-hover:bg-soleil" aria-hidden="true">
                     <svg
                       class="h-6 w-6"
                       viewBox="0 0 24 24"
@@ -210,13 +226,14 @@ const section = "scroll-mt-28 border-t border-graphite/10 pt-10 first:border-t-0
           </ul>
         </section>
 
-        <div class="mt-16 flex flex-col gap-14">
+        <div class="mt-10 flex flex-col gap-8">
           <!-- 1 -->
           <section id="responsable" class={section} aria-labelledby="t-responsable">
-            <h2 id="t-responsable" class={h2}><span class={num}>01</span>Responsable du traitement</h2>
+            <h2 id="t-responsable" class={h2}><span class={num} aria-hidden="true">01</span>Responsable du traitement</h2>
             <p class={p}>
-              Le responsable du traitement des données personnelles collectées sur ce site est <strong class="font-semibold text-encre">{config.name}</strong>,
-              étudiant en BUT MMI (Métiers du Multimédia et de l’Internet), domicilié à {config.city}.
+              Le responsable du traitement des données personnelles collectées sur ce site est
+              <strong class="font-semibold text-encre">{config.name}</strong>, étudiant en BUT MMI (Métiers du
+              Multimédia et de l’Internet), domicilié à {config.city}.
             </p>
             <p class={p}>
               Pour toute question relative à vos données personnelles, vous pouvez me contacter à l’adresse
@@ -226,12 +243,13 @@ const section = "scroll-mt-28 border-t border-graphite/10 pt-10 first:border-t-0
 
           <!-- 2 -->
           <section id="donnees" class={section} aria-labelledby="t-donnees">
-            <h2 id="t-donnees" class={h2}><span class={num}>02</span>Données collectées</h2>
+            <h2 id="t-donnees" class={h2}><span class={num} aria-hidden="true">02</span>Données collectées</h2>
             <p class={p}>Selon votre usage du site, les données suivantes peuvent être traitées :</p>
             <ul class={ul}>
               <li>
-                <strong class="font-semibold text-encre">Les données que vous me transmettez</strong> lorsque vous me
-                contactez : nom, adresse e-mail et contenu de votre message.
+                <strong class="font-semibold text-encre">Les données que vous me transmettez</strong> lorsque vous
+                m’écrivez via le formulaire de contact : nom, adresse e-mail, sujet (facultatif) et contenu de votre
+                message.
               </li>
               <li>
                 <strong class="font-semibold text-encre">Les données techniques de connexion</strong> générées
@@ -248,7 +266,7 @@ const section = "scroll-mt-28 border-t border-graphite/10 pt-10 first:border-t-0
 
           <!-- 3 -->
           <section id="finalites" class={section} aria-labelledby="t-finalites">
-            <h2 id="t-finalites" class={h2}><span class={num}>03</span>Finalités, bases légales et durées</h2>
+            <h2 id="t-finalites" class={h2}><span class={num} aria-hidden="true">03</span>Finalités, bases légales et durées</h2>
             <p class={p}>
               Chaque traitement repose sur une base légale prévue par le Règlement général sur la protection des
               données (RGPD) :
@@ -257,7 +275,7 @@ const section = "scroll-mt-28 border-t border-graphite/10 pt-10 first:border-t-0
             <ul class="mt-6 flex flex-col gap-4">
               {
                 treatments.map((t) => (
-                  <li class="rounded-3xl bg-white p-6 ring-1 ring-black/5 sm:p-7">
+                  <li class="rounded-2xl bg-neige p-6 ring-1 ring-black/5 sm:p-7">
                     <h3 class="flex items-center gap-3 font-outfit text-lg font-bold text-encre">
                       <Hexagon class="w-4 shrink-0" fill="var(--color-soleil)" />
                       {t.name}
@@ -270,7 +288,7 @@ const section = "scroll-mt-28 border-t border-graphite/10 pt-10 first:border-t-0
                         ["Conservation", t.duration],
                       ].map(([label, value]) => (
                         <div>
-                          <dt class="font-inter text-[0.7rem] font-bold uppercase tracking-[0.14em] text-cuivre">{label}</dt>
+                          <dt class={dlLabel}>{label}</dt>
                           <dd class="mt-1.5 text-sm leading-relaxed text-graphite/80">{value}</dd>
                         </div>
                       ))}
@@ -288,7 +306,7 @@ const section = "scroll-mt-28 border-t border-graphite/10 pt-10 first:border-t-0
 
           <!-- 4 -->
           <section id="cookies" class={section} aria-labelledby="t-cookies">
-            <h2 id="t-cookies" class={h2}><span class={num}>04</span>Cookies et traceurs</h2>
+            <h2 id="t-cookies" class={h2}><span class={num} aria-hidden="true">04</span>Cookies et traceurs</h2>
             <p class={p}>
               Ce site n’utilise aucun cookie publicitaire, aucun outil de mesure d’audience et aucun traceur de suivi
               de votre navigation. Aucun bandeau de consentement n’est donc nécessaire.
@@ -301,19 +319,20 @@ const section = "scroll-mt-28 border-t border-graphite/10 pt-10 first:border-t-0
 
           <!-- 5 -->
           <section id="destinataires" class={section} aria-labelledby="t-destinataires">
-            <h2 id="t-destinataires" class={h2}><span class={num}>05</span>Destinataires et services tiers</h2>
+            <h2 id="t-destinataires" class={h2}><span class={num} aria-hidden="true">05</span>Destinataires et services tiers</h2>
             <p class={p}>
               Vos données ne sont ni vendues ni louées. Elles sont uniquement accessibles à moi-même et aux
               prestataires techniques strictement nécessaires au fonctionnement du site :
             </p>
             <ul class={ul}>
               <li>
-                <strong class="font-semibold text-encre">Hébergeur du site :</strong> {config.host}. Il traite les
-                journaux de connexion.
+                <strong class="font-semibold text-encre">Hébergeur du site :</strong> {config.host}. Il héberge la
+                base de données qui enregistre les messages du formulaire de contact, ainsi que les journaux de
+                connexion.
               </li>
               <li>
-                <strong class="font-semibold text-encre">Messagerie électronique :</strong> les messages que vous
-                m’envoyez sont reçus via ma boîte e-mail (Gmail, service de Google).
+                <strong class="font-semibold text-encre">Messagerie électronique :</strong> lorsque je vous réponds,
+                l’échange passe par ma boîte e-mail (Gmail, service de Google).
               </li>
               <li>
                 <strong class="font-semibold text-encre">Google Fonts :</strong> les polices Outfit et Inter sont
@@ -328,7 +347,7 @@ const section = "scroll-mt-28 border-t border-graphite/10 pt-10 first:border-t-0
 
           <!-- 6 -->
           <section id="transferts" class={section} aria-labelledby="t-transferts">
-            <h2 id="t-transferts" class={h2}><span class={num}>06</span>Transferts hors Union européenne</h2>
+            <h2 id="t-transferts" class={h2}><span class={num} aria-hidden="true">06</span>Transferts hors Union européenne</h2>
             <p class={p}>
               Certains prestataires, notamment Google, peuvent traiter des données en dehors de l’Union européenne.
               Ces transferts sont alors encadrés par les garanties prévues par le RGPD, telles qu’une décision
@@ -338,32 +357,33 @@ const section = "scroll-mt-28 border-t border-graphite/10 pt-10 first:border-t-0
 
           <!-- 7 -->
           <section id="securite" class={section} aria-labelledby="t-securite">
-            <h2 id="t-securite" class={h2}><span class={num}>07</span>Sécurité des données</h2>
+            <h2 id="t-securite" class={h2}><span class={num} aria-hidden="true">07</span>Sécurité des données</h2>
             <p class={p}>
               Je mets en œuvre des mesures raisonnables pour protéger vos données contre l’accès non autorisé, la
-              perte ou l’altération : connexion chiffrée au site (HTTPS), accès restreint à ma messagerie et
-              limitation des données collectées au strict nécessaire. Aucune méthode de transmission n’étant
-              infaillible, je ne peux toutefois garantir une sécurité absolue.
+              perte ou l’altération : connexion chiffrée au site (HTTPS), accès aux messages réservé à un espace
+              d’administration protégé par identifiant et mot de passe, et limitation des données collectées au strict
+              nécessaire. Aucune méthode de transmission n’étant infaillible, je ne peux toutefois garantir une
+              sécurité absolue.
             </p>
           </section>
 
           <!-- 8 -->
           <section id="droits" class={section} aria-labelledby="t-droits">
-            <h2 id="t-droits" class={h2}><span class={num}>08</span>Vos droits</h2>
+            <h2 id="t-droits" class={h2}><span class={num} aria-hidden="true">08</span>Vos droits</h2>
             <p class={p}>Conformément au RGPD et à la loi Informatique et Libertés, vous disposez des droits suivants :</p>
-            <ul class={ul}>
+
+            <ul class="mt-6 grid gap-3 sm:grid-cols-2">
               {
                 rights.map(([name, text]) => (
-                  <li>
-                    <strong class="font-semibold text-encre">{name} :</strong>{" "}
-                    {text}
+                  <li class="rounded-2xl bg-neige p-5 ring-1 ring-black/5">
+                    <p class="flex items-center gap-2.5 font-outfit text-base font-bold text-encre">
+                      <Hexagon class="w-3.5 shrink-0" fill="var(--color-soleil)" />
+                      {name}
+                    </p>
+                    <p class="mt-2 text-sm leading-relaxed text-graphite/75">{text}</p>
                   </li>
                 ))
               }
-              <li>
-                <strong class="font-semibold text-encre">Directives post-mortem :</strong> définir le sort de vos
-                données après votre décès.
-              </li>
             </ul>
 
             <p class={p}>
@@ -383,7 +403,7 @@ const section = "scroll-mt-28 border-t border-graphite/10 pt-10 first:border-t-0
 
           <!-- 9 -->
           <section id="modifications" class={section} aria-labelledby="t-modifications">
-            <h2 id="t-modifications" class={h2}><span class={num}>09</span>Modifications de la politique</h2>
+            <h2 id="t-modifications" class={h2}><span class={num} aria-hidden="true">09</span>Modifications de la politique</h2>
             <p class={p}>
               Cette politique peut être mise à jour pour tenir compte d’évolutions du site ou de la réglementation. La
               date de dernière mise à jour figure en haut de cette page : je vous invite à la consulter régulièrement.
@@ -392,14 +412,14 @@ const section = "scroll-mt-28 border-t border-graphite/10 pt-10 first:border-t-0
 
           <!-- 10 -->
           <section id="contact" class={section} aria-labelledby="t-contact">
-            <h2 id="t-contact" class={h2}><span class={num}>10</span>Me contacter</h2>
+            <h2 id="t-contact" class={h2}><span class={num} aria-hidden="true">10</span>Me contacter</h2>
             <p class={p}>Une question sur cette politique ou sur vos données ? Écrivez-moi, je vous répondrai dès que possible.</p>
             <a
               href={`mailto:${config.email}`}
-              class="mt-6 inline-flex items-center gap-3 rounded-xl bg-soleil px-5 py-3 font-outfit text-sm font-bold text-encre transition duration-300 hover:-translate-y-0.5 hover:bg-miel focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-nuit"
+              class="pv-shine group relative isolate mt-6 inline-flex items-center gap-3 overflow-hidden rounded-xl bg-linear-to-br from-miel via-soleil to-safran px-6 py-3.5 font-outfit text-sm font-bold text-encre shadow-lg shadow-soleil/25 transition duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-soleil/40 focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-nuit"
             >
               {config.email}
-              <img src="/icons/black_contact.svg" alt="" width="18" height="18" class="h-[18px] w-[18px]" />
+              <img src="/icons/black_contact.svg" alt="" width="18" height="18" class="h-[18px] w-[18px] transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
             </a>
             <p class="mt-8 text-sm text-graphite/60">
               Voir aussi les <a href="/mentions-legales" class={link}>mentions légales</a>.
@@ -410,6 +430,100 @@ const section = "scroll-mt-28 border-t border-graphite/10 pt-10 first:border-t-0
     </div>
   </div>
 </Layout>
+
+<style>
+  /* ---------- Nid d'abeilles ---------- */
+  .pv-honey {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='56' viewBox='0 0 100 56'%3E%3Cpath d='M66 28L50 0L16 0L0 28L16 56L50 56L66 28L100 28' fill='none' stroke='white' stroke-opacity='.06'/%3E%3Cpath d='M0 28L34 28L50 0L84 0L100 28L84 56L50 56L34 28' fill='none' stroke='white' stroke-opacity='.06'/%3E%3C/svg%3E");
+    background-size: 120px 67px;
+    mask-image: radial-gradient(ellipse at 75% 40%, #000 0%, transparent 75%);
+  }
+  .pv-honey-light {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='56' viewBox='0 0 100 56'%3E%3Cpath d='M66 28L50 0L16 0L0 28L16 56L50 56L66 28L100 28' fill='none' stroke='%2311273b' stroke-opacity='.06'/%3E%3Cpath d='M0 28L34 28L50 0L84 0L100 28L84 56L50 56L34 28' fill='none' stroke='%2311273b' stroke-opacity='.06'/%3E%3C/svg%3E");
+    background-size: 120px 67px;
+    mask-image: radial-gradient(ellipse at 95% 5%, #000 0%, transparent 55%);
+  }
+
+  /* ---------- Texte ---------- */
+  .pv-grad {
+    background: linear-gradient(100deg, var(--color-miel), var(--color-soleil) 50%, var(--color-safran));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* Hexagone en clip-path (numéros des rubriques, icônes) */
+  .pv-hex {
+    clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%);
+  }
+
+  /* ---------- Lueurs / flottement / pastille ---------- */
+  .pv-drift {
+    animation: pv-drift 16s ease-in-out infinite;
+  }
+  .pv-drift-rev {
+    animation-direction: reverse;
+    animation-delay: -8s;
+  }
+  @keyframes pv-drift {
+    0%, 100% { transform: translate3d(0, 0, 0); }
+    50% { transform: translate3d(40px, 18px, 0); }
+  }
+
+  .pv-float {
+    animation: pv-float 9s ease-in-out infinite;
+    animation-delay: var(--d, 0s);
+  }
+  @keyframes pv-float {
+    0%, 100% { transform: translate3d(0, 0, 0); }
+    50% { transform: translate3d(0, -10px, 0); }
+  }
+
+  .pv-ping {
+    animation: pv-ping 1.8s ease-out infinite;
+  }
+  @keyframes pv-ping {
+    0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-soleil) 70%, transparent); }
+    100% { box-shadow: 0 0 0 10px transparent; }
+  }
+
+  /* ---------- Reflet du bouton ---------- */
+  .pv-shine::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: -1;
+    width: 40%;
+    background: linear-gradient(100deg, transparent, rgb(255 255 255 / 0.5), transparent);
+    transform: translateX(-220%) skewX(-20deg);
+    transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .pv-shine:hover::before,
+  .pv-shine:focus-visible::before {
+    transform: translateX(520%) skewX(-20deg);
+  }
+
+  /* ---------- Apparition du hero au chargement ---------- */
+  .pv-in {
+    animation: pv-in 0.95s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: calc(var(--i, 0) * 100ms + 120ms);
+  }
+  @keyframes pv-in {
+    from {
+      opacity: 0;
+      transform: translateY(26px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation: none !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+</style>
 
 <script>
   // Sommaire : section lue en surbrillance + fil de progression jusqu'à l'hexagone actif.

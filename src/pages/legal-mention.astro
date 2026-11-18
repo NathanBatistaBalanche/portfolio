@@ -17,18 +17,19 @@ const config = {
   name: "Nathan Batista Balanche",
   city: "Montbéliard (France)",
   email: "batistabalanchenathan@gmail.com",
-  host: "À compléter : nom et adresse du fournisseur de ton VPS (ex : OVH SAS, 2 rue Kellermann, 59100 Roubaix)",
+  host: "VPS Privé",
 };
 
 // Classes réutilisables
 const container = "mx-auto w-full max-w-7xl px-5 sm:px-8";
-const h2 = "flex items-baseline gap-4 font-outfit text-2xl font-bold leading-tight text-encre sm:text-3xl";
-const num = "font-outfit text-lg font-bold text-cuivre";
-const p = "mt-4 leading-relaxed text-graphite/80";
-const ul = "mt-4 flex flex-col gap-2 pl-5 list-disc marker:text-soleil text-graphite/80 leading-relaxed";
+const h2 = "flex items-center gap-4 font-outfit text-2xl font-bold leading-tight text-encre sm:text-3xl";
+const num =
+  "lm-hex grid h-[2.598rem] w-12 shrink-0 place-items-center bg-nuit font-outfit text-sm font-bold text-soleil";
+const p = "mt-5 leading-relaxed text-graphite/80";
+const ul = "mt-5 flex flex-col gap-2 pl-5 list-disc marker:text-soleil text-graphite/80 leading-relaxed";
 const link =
   "font-medium text-azur underline decoration-azur/30 underline-offset-4 transition-colors hover:text-nuit hover:decoration-soleil focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-soleil";
-const section = "scroll-mt-28 border-t border-graphite/10 pt-10 first:border-t-0 first:pt-0";
+const section = "scroll-mt-28 rounded-3xl bg-white p-7 shadow-sm shadow-nuit/5 ring-1 ring-black/5 sm:p-10";
 
 const sections = [
   { id: "editeur", title: "Éditeur du site" },
@@ -52,53 +53,58 @@ const publisher = [
 ];
 
 const dlLabel = "font-inter text-[0.7rem] font-bold uppercase tracking-[0.14em] text-cuivre";
-const card = "mt-6 rounded-3xl bg-white p-6 ring-1 ring-black/5 sm:p-7";
+const card = "mt-6 rounded-2xl bg-neige p-6 ring-1 ring-black/5 sm:p-7";
 ---
 
-<Layout>
+<Layout title="Mentions légales — Nathan Batista Balanche">
   <!-- ======================= HERO ======================= -->
-  <section class="relative overflow-hidden bg-nuit text-neige" aria-labelledby="legal-title">
+  <section class="relative isolate overflow-hidden bg-nuit text-neige" aria-labelledby="legal-title">
+    <div aria-hidden="true" class="pointer-events-none absolute inset-0 -z-10">
+      <div class="lm-honey absolute inset-0"></div>
+      <div class="lm-drift absolute -left-32 top-0 h-96 w-96 rounded-full bg-soleil/15 blur-3xl"></div>
+      <div class="lm-drift lm-drift-rev absolute -right-24 bottom-0 h-[24rem] w-[24rem] rounded-full bg-azur/30 blur-3xl"></div>
+    </div>
+
     <div class={`${container} relative py-16 sm:py-24`}>
-      <p class="flex items-center gap-3 font-inter text-sm font-bold text-soleil">
-        <Hexagon class="w-4" fill="var(--color-soleil)" />
-        INFORMATIONS LÉGALES
-      </p>
-
-      <h1
-        id="legal-title"
-        class="mt-6 max-w-3xl font-outfit text-5xl font-light leading-[1.08] tracking-tight sm:text-6xl"
-      >
-        Mentions légales.
-      </h1>
-
-      <p class="mt-6 max-w-2xl text-lg leading-relaxed text-neige/85">
-        Les informations légales relatives à l’éditeur, à l’hébergement et à l’utilisation de ce site.
-      </p>
-
-      <p class="mt-8 inline-flex items-center gap-2.5 rounded-full bg-abysse px-4 py-2 font-inter text-xs text-neige/90">
-        <span class="h-2.5 w-2.5 rounded-full bg-soleil" aria-hidden="true"></span>
+      <p class="lm-in inline-flex items-center gap-3 rounded-full border border-white/10 bg-abysse/80 px-4 py-2 font-inter text-xs text-neige/90 backdrop-blur" style="--i:0">
+        <span class="lm-ping h-2.5 w-2.5 rounded-full bg-soleil" aria-hidden="true"></span>
         Dernière mise à jour : <time datetime={config.isoDate}>{config.lastUpdate}</time>
       </p>
 
+      <h1 id="legal-title" class="lm-in mt-8 max-w-3xl font-outfit text-5xl font-light leading-[1.08] tracking-tight sm:text-6xl lg:text-7xl" style="--i:1">
+        Mentions <span class="lm-grad font-medium">légales.</span>
+      </h1>
+
+      <p class="lm-in mt-6 max-w-2xl text-base leading-relaxed text-neige/85 sm:text-lg" style="--i:2">
+        Les informations légales relatives à l’éditeur, à l’hébergement et à l’utilisation de ce site.
+      </p>
+
       <!-- Nid d'abeilles décoratif -->
-      <div class="absolute right-8 top-1/2 hidden h-[9.1rem] w-[13.1rem] -translate-y-1/2 lg:block xl:right-12" aria-hidden="true">
-        <Hexagon class="absolute left-0 top-[2.27rem] w-[5.25rem] scale-95" fill="var(--color-neige)" stroke="var(--color-abysse)" />
-        <Hexagon class="absolute left-[3.94rem] top-0 w-[5.25rem] scale-95" fill="var(--color-soleil)" />
-        <Hexagon class="absolute left-[7.88rem] top-[2.27rem] w-[5.25rem] scale-95" fill="var(--color-azur)" />
-        <Hexagon class="absolute left-[3.94rem] top-[4.55rem] w-[5.25rem] scale-95" fill="var(--color-neige)" stroke="var(--color-abysse)" />
+      <div class="lm-in absolute right-8 top-1/2 hidden h-[9.1rem] w-[13.1rem] -translate-y-1/2 lg:block xl:right-12" style="--i:3" aria-hidden="true">
+        <span class="lm-float absolute left-0 top-[2.27rem] w-[5.25rem]">
+          <Hexagon class="block w-full" fill="var(--color-neige)" />
+        </span>
+        <span class="lm-float absolute left-[3.94rem] top-0 w-[5.25rem] drop-shadow-xl" style="--d:-3s">
+          <Hexagon class="block w-full" fill="var(--color-soleil)" />
+        </span>
+        <span class="lm-float absolute left-[7.88rem] top-[2.27rem] w-[5.25rem]" style="--d:-6s">
+          <Hexagon class="block w-full" fill="var(--color-azur)" />
+        </span>
+        <span class="lm-float absolute left-[3.94rem] top-[4.55rem] w-[5.25rem]" style="--d:-9s">
+          <Hexagon class="block w-full" fill="var(--color-neige)" />
+        </span>
       </div>
     </div>
   </section>
 
   <!-- ======================= CONTENU ======================= -->
-  <div class="bg-neige text-nuit">
+  <div class="relative isolate overflow-hidden bg-neige text-nuit">
+    <div aria-hidden="true" class="lm-honey-light pointer-events-none absolute inset-0 -z-10"></div>
+
     <div class={`${container} grid gap-12 py-16 sm:py-24 lg:grid-cols-[19rem_1fr] lg:gap-16`}>
       <!-- Sommaire -->
       <aside class="lg:sticky lg:top-28 lg:self-start">
-        <nav
-          aria-label="Sommaire"
-          class="rounded-3xl bg-white p-6 shadow-sm shadow-nuit/5 ring-1 ring-black/5 sm:p-7"
-        >
+        <nav aria-label="Sommaire" class="rounded-3xl bg-white p-6 shadow-lg shadow-nuit/5 ring-1 ring-black/5 sm:p-7">
           <div class="flex items-center justify-between gap-3">
             <p class="flex items-center gap-3 font-inter text-xs font-bold uppercase tracking-[0.14em] text-cuivre">
               <Hexagon class="w-3.5" fill="var(--color-soleil)" />
@@ -145,147 +151,223 @@ const card = "mt-6 rounded-3xl bg-white p-6 ring-1 ring-black/5 sm:p-7";
 
       <!-- Texte -->
       <article class="min-w-0 max-w-3xl">
-  <div class="flex flex-col gap-14">
-    <!-- 1 -->
-    <section id="editeur" class={section} aria-labelledby="t-editeur">
-      <h2 id="t-editeur" class={h2}><span class={num}>01</span>Éditeur du site</h2>
-      <p class={p}>
-        Conformément à l’article 6 de la loi n° 2004-575 du 21 juin 2004 pour la confiance dans l’économie numérique,
-        voici les informations relatives à l’éditeur de ce site.
-      </p>
+        <div class="flex flex-col gap-8">
+          <!-- 1 -->
+          <section id="editeur" class={section} aria-labelledby="t-editeur">
+            <h2 id="t-editeur" class={h2}><span class={num} aria-hidden="true">01</span>Éditeur du site</h2>
+            <p class={p}>
+              Conformément à l’article 6 de la loi n° 2004-575 du 21 juin 2004 pour la confiance dans l’économie
+              numérique, voici les informations relatives à l’éditeur de ce site.
+            </p>
 
-      <div class={card}>
-        <h3 class="flex items-center gap-3 font-outfit text-lg font-bold text-encre">
-          <Hexagon class="w-4 shrink-0" fill="var(--color-soleil)" />
-          {config.name}
-        </h3>
-        <dl class="mt-5 grid gap-x-8 gap-y-5 border-t border-graphite/10 pt-5 sm:grid-cols-2">
-          {
-            publisher.map(([label, value]) => (
-              <div>
-                <dt class={dlLabel}>{label}</dt>
-                <dd class="mt-1.5 text-sm leading-relaxed text-graphite/80">
-                  {label === "Contact" ? (
-                    <a href={`mailto:${config.email}`} class={link}>
-                      {value}
-                    </a>
-                  ) : (
-                    value
-                  )}
-                </dd>
-              </div>
-            ))
-          }
-        </dl>
-      </div>
-    </section>
+            <div class={card}>
+              <h3 class="flex items-center gap-3 font-outfit text-lg font-bold text-encre">
+                <Hexagon class="w-4 shrink-0" fill="var(--color-soleil)" />
+                {config.name}
+              </h3>
+              <dl class="mt-5 grid gap-x-8 gap-y-5 border-t border-graphite/10 pt-5 sm:grid-cols-2">
+                {
+                  publisher.map(([label, value]) => (
+                    <div>
+                      <dt class={dlLabel}>{label}</dt>
+                      <dd class="mt-1.5 text-sm leading-relaxed text-graphite/80">
+                        {label === "Contact" ? (
+                          <a href={`mailto:${config.email}`} class={link}>
+                            {value}
+                          </a>
+                        ) : (
+                          value
+                        )}
+                      </dd>
+                    </div>
+                  ))
+                }
+              </dl>
+            </div>
+          </section>
 
-    <!-- 2 -->
-    <section id="hebergeur" class={section} aria-labelledby="t-hebergeur">
-      <h2 id="t-hebergeur" class={h2}><span class={num}>02</span>Hébergement</h2>
-      <p class={p}>
-        Le site est installé sur un serveur privé virtuel (VPS) fourni par :
-      </p>
+          <!-- 2 -->
+          <section id="hebergeur" class={section} aria-labelledby="t-hebergeur">
+            <h2 id="t-hebergeur" class={h2}><span class={num} aria-hidden="true">02</span>Hébergement</h2>
+            <p class={p}>Le site est installé sur un serveur privé virtuel (VPS) fourni par :</p>
 
-      <div class={card}>
-        <dl>
-          <dt class={dlLabel}>Hébergeur</dt>
-          <dd class="mt-1.5 text-sm leading-relaxed text-graphite/80">{config.host}</dd>
-        </dl>
-      </div>
+            <div class={card}>
+              <dl>
+                <dt class={dlLabel}>Hébergeur</dt>
+                <dd class="mt-1.5 text-sm leading-relaxed text-graphite/80">{config.host}</dd>
+              </dl>
+            </div>
 
-      <p class={p}>
-        Le fournisseur met à disposition l’infrastructure ; l’administration du serveur et la maintenance du site sont
-        assurées par l’éditeur.
-      </p>
-    </section>
+            <p class={p}>
+              Le fournisseur met à disposition l’infrastructure ; l’administration du serveur et la maintenance du site
+              sont assurées par l’éditeur.
+            </p>
+          </section>
 
-    <!-- 3 -->
-    <section id="propriete" class={section} aria-labelledby="t-propriete">
-      <h2 id="t-propriete" class={h2}><span class={num}>03</span>Propriété intellectuelle</h2>
-      <p class={p}>
-        L’ensemble des éléments de ce site (textes, visuels, maquettes, logo, identité graphique, structure et code
-        source) est la propriété de l’éditeur, sauf mention contraire. Toute reproduction, représentation, modification
-        ou exploitation, totale ou partielle, sans autorisation écrite préalable, est interdite et constitue une
-        contrefaçon sanctionnée par les articles L.335-2 et suivants du Code de la propriété intellectuelle.
-      </p>
-      <p class={p}>
-        Certains projets présentés ont été réalisés en groupe ou dans un cadre pédagogique : les droits sur ces travaux
-        peuvent être partagés avec leurs co-auteurs. Les marques, logos, images et contenus appartenant à des tiers
-        restent la propriété de leurs titulaires respectifs.
-      </p>
-    </section>
+          <!-- 3 -->
+          <section id="propriete" class={section} aria-labelledby="t-propriete">
+            <h2 id="t-propriete" class={h2}><span class={num} aria-hidden="true">03</span>Propriété intellectuelle</h2>
+            <p class={p}>
+              L’ensemble des éléments de ce site (textes, visuels, maquettes, logo, identité graphique, structure et code
+              source) est la propriété de l’éditeur, sauf mention contraire. Toute reproduction, représentation,
+              modification ou exploitation, totale ou partielle, sans autorisation écrite préalable, est interdite et
+              constitue une contrefaçon sanctionnée par les articles L.335-2 et suivants du Code de la propriété
+              intellectuelle.
+            </p>
+            <p class={p}>
+              Certains projets présentés ont été réalisés en groupe ou dans un cadre pédagogique : les droits sur ces
+              travaux peuvent être partagés avec leurs co-auteurs. Les marques, logos, images et contenus appartenant à
+              des tiers restent la propriété de leurs titulaires respectifs.
+            </p>
+          </section>
 
-    <!-- 4 -->
-    <section id="responsabilite" class={section} aria-labelledby="t-responsabilite">
-      <h2 id="t-responsabilite" class={h2}><span class={num}>04</span>Responsabilité</h2>
-      <p class={p}>
-        Je m’efforce de fournir des informations exactes et à jour, mais ne peux garantir l’absence d’erreur ou
-        d’omission. Les contenus ont une valeur informative et peuvent être modifiés à tout moment.
-      </p>
-      <p class={p}>
-        L’accès au site peut être interrompu ponctuellement (maintenance, panne, cas de force majeure). L’éditeur ne
-        saurait être tenu responsable d’un dommage résultant de l’utilisation du site ou de l’impossibilité d’y
-        accéder.
-      </p>
-    </section>
+          <!-- 4 -->
+          <section id="responsabilite" class={section} aria-labelledby="t-responsabilite">
+            <h2 id="t-responsabilite" class={h2}><span class={num} aria-hidden="true">04</span>Responsabilité</h2>
+            <p class={p}>
+              Je m’efforce de fournir des informations exactes et à jour, mais ne peux garantir l’absence d’erreur ou
+              d’omission. Les contenus ont une valeur informative et peuvent être modifiés à tout moment.
+            </p>
+            <p class={p}>
+              L’accès au site peut être interrompu ponctuellement (maintenance, panne, cas de force majeure). L’éditeur
+              ne saurait être tenu responsable d’un dommage résultant de l’utilisation du site ou de l’impossibilité d’y
+              accéder.
+            </p>
+          </section>
 
-    <!-- 5 -->
-    <section id="liens" class={section} aria-labelledby="t-liens">
-      <h2 id="t-liens" class={h2}><span class={num}>05</span>Liens hypertextes</h2>
-      <p class={p}>
-        Ce site contient des liens vers des services externes (LinkedIn, GitHub, Behance). Leur contenu ne relève pas
-        de ma responsabilité et leurs propres conditions d’utilisation s’appliquent.
-      </p>
-      <p class={p}>
-        Les liens vers ce site sont libres, à condition de ne pas porter atteinte à son image ni induire en erreur sur
-        son contenu ou sa provenance.
-      </p>
-    </section>
+          <!-- 5 -->
+          <section id="liens" class={section} aria-labelledby="t-liens">
+            <h2 id="t-liens" class={h2}><span class={num} aria-hidden="true">05</span>Liens hypertextes</h2>
+            <p class={p}>
+              Ce site contient des liens vers des services externes (LinkedIn, GitHub, Behance). Leur contenu ne relève
+              pas de ma responsabilité et leurs propres conditions d’utilisation s’appliquent.
+            </p>
+            <p class={p}>
+              Les liens vers ce site sont libres, à condition de ne pas porter atteinte à son image ni induire en erreur
+              sur son contenu ou sa provenance.
+            </p>
+          </section>
 
-    <!-- 6 -->
-    <section id="donnees" class={section} aria-labelledby="t-donnees">
-      <h2 id="t-donnees" class={h2}><span class={num}>06</span>Données personnelles et cookies</h2>
-      <p class={p}>
-        Le traitement de vos données personnelles (finalités, durées de conservation, destinataires et exercice de vos
-        droits) est détaillé dans la <a href="/politique-de-confidentialite" class={link}>politique de confidentialité</a>.
-      </p>
-    </section>
+          <!-- 6 -->
+          <section id="donnees" class={section} aria-labelledby="t-donnees">
+            <h2 id="t-donnees" class={h2}><span class={num} aria-hidden="true">06</span>Données personnelles et cookies</h2>
+            <p class={p}>
+              Le traitement de vos données personnelles (finalités, durées de conservation, destinataires et exercice de
+              vos droits) est détaillé dans la
+              <a href="/politique-de-confidentialite" class={link}>politique de confidentialité</a>.
+            </p>
+          </section>
 
-    <!-- 7 -->
-    <section id="credits" class={section} aria-labelledby="t-credits">
-      <h2 id="t-credits" class={h2}><span class={num}>07</span>Crédits</h2>
-      <ul class={ul}>
-        <li>
-          <strong class="font-semibold text-encre">Conception, design et développement :</strong> {config.name}.
-        </li>
-        <li>
-          <strong class="font-semibold text-encre">Technologies :</strong> Astro et Tailwind CSS.
-        </li>
-        <li>
-          <strong class="font-semibold text-encre">Polices :</strong> Outfit et Inter, distribuées sous licence SIL Open
-          Font License 1.1.
-        </li>
-      </ul>
-    </section>
+          <!-- 7 -->
+          <section id="credits" class={section} aria-labelledby="t-credits">
+            <h2 id="t-credits" class={h2}><span class={num} aria-hidden="true">07</span>Crédits</h2>
+            <ul class={ul}>
+              <li>
+                <strong class="font-semibold text-encre">Conception, design et développement :</strong> {config.name}.
+              </li>
+              <li>
+                <strong class="font-semibold text-encre">Technologies :</strong> Astro et Tailwind CSS.
+              </li>
+              <li>
+                <strong class="font-semibold text-encre">Polices :</strong> Outfit et Inter, distribuées sous licence SIL
+                Open Font License 1.1.
+              </li>
+            </ul>
+          </section>
 
-    <!-- 8 -->
-    <section id="droit" class={section} aria-labelledby="t-droit">
-      <h2 id="t-droit" class={h2}><span class={num}>08</span>Droit applicable</h2>
-      <p class={p}>
-        Les présentes mentions légales sont régies par le droit français. En cas de litige, et à défaut de résolution
-        amiable, les tribunaux français sont seuls compétents.
-      </p>
-      <p class={p}>
-        Une question ou un signalement concernant le site ? Écrivez-moi à
-        <a href={`mailto:${config.email}`} class={link}>{config.email}</a>.
-      </p>
-    </section>
-  </div>
+          <!-- 8 -->
+          <section id="droit" class={section} aria-labelledby="t-droit">
+            <h2 id="t-droit" class={h2}><span class={num} aria-hidden="true">08</span>Droit applicable</h2>
+            <p class={p}>
+              Les présentes mentions légales sont régies par le droit français. En cas de litige, et à défaut de
+              résolution amiable, les tribunaux français sont seuls compétents.
+            </p>
+            <p class={p}>
+              Une question ou un signalement concernant le site ? Écrivez-moi à
+              <a href={`mailto:${config.email}`} class={link}>{config.email}</a>.
+            </p>
+          </section>
+        </div>
       </article>
     </div>
   </div>
 </Layout>
+
+<style>
+  /* ---------- Nid d'abeilles ---------- */
+  .lm-honey {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='56' viewBox='0 0 100 56'%3E%3Cpath d='M66 28L50 0L16 0L0 28L16 56L50 56L66 28L100 28' fill='none' stroke='white' stroke-opacity='.06'/%3E%3Cpath d='M0 28L34 28L50 0L84 0L100 28L84 56L50 56L34 28' fill='none' stroke='white' stroke-opacity='.06'/%3E%3C/svg%3E");
+    background-size: 120px 67px;
+    mask-image: radial-gradient(ellipse at 75% 40%, #000 0%, transparent 75%);
+  }
+  .lm-honey-light {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='56' viewBox='0 0 100 56'%3E%3Cpath d='M66 28L50 0L16 0L0 28L16 56L50 56L66 28L100 28' fill='none' stroke='%2311273b' stroke-opacity='.06'/%3E%3Cpath d='M0 28L34 28L50 0L84 0L100 28L84 56L50 56L34 28' fill='none' stroke='%2311273b' stroke-opacity='.06'/%3E%3C/svg%3E");
+    background-size: 120px 67px;
+    mask-image: radial-gradient(ellipse at 95% 5%, #000 0%, transparent 55%);
+  }
+
+  /* ---------- Texte ---------- */
+  .lm-grad {
+    background: linear-gradient(100deg, var(--color-miel), var(--color-soleil) 50%, var(--color-safran));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* Hexagone en clip-path (numéros des rubriques) */
+  .lm-hex {
+    clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%);
+  }
+
+  /* ---------- Lueurs / flottement / pastille ---------- */
+  .lm-drift {
+    animation: lm-drift 16s ease-in-out infinite;
+  }
+  .lm-drift-rev {
+    animation-direction: reverse;
+    animation-delay: -8s;
+  }
+  @keyframes lm-drift {
+    0%, 100% { transform: translate3d(0, 0, 0); }
+    50% { transform: translate3d(40px, 18px, 0); }
+  }
+
+  .lm-float {
+    animation: lm-float 9s ease-in-out infinite;
+    animation-delay: var(--d, 0s);
+  }
+  @keyframes lm-float {
+    0%, 100% { transform: translate3d(0, 0, 0); }
+    50% { transform: translate3d(0, -10px, 0); }
+  }
+
+  .lm-ping {
+    animation: lm-ping 1.8s ease-out infinite;
+  }
+  @keyframes lm-ping {
+    0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-soleil) 70%, transparent); }
+    100% { box-shadow: 0 0 0 10px transparent; }
+  }
+
+  /* ---------- Apparition du hero au chargement ---------- */
+  .lm-in {
+    animation: lm-in 0.95s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: calc(var(--i, 0) * 100ms + 120ms);
+  }
+  @keyframes lm-in {
+    from {
+      opacity: 0;
+      transform: translateY(26px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation: none !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+</style>
 
 <script>
   // Sommaire : section lue en surbrillance + fil de progression jusqu'à l'hexagone actif.
