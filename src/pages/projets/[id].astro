@@ -1,0 +1,472 @@
+---
+/**
+ * src/pages/projets/[id].astro
+ * Page « Étude de cas » d'un projet : hero, bandeau d'infos, point de départ, démarche,
+ * apprentissages, projet précédent / suivant, bandeau final.
+ * Le Header et le Footer sont dans le Layout.
+ *
+ * Tout vient de la base SQLite via trouverProjet(id) (src/lib/projets.ts).
+ * Adresse : /projets/ordaily → id = "ordaily". Un id inconnu (ou non publié) renvoie la page 404.
+ *
+ * Icônes : /public/icons/<icone>.svg (clé stockée dans projet_apprentissages.icone)
+ * Images : /public/images/projets/<id>/cover.webp
+ */
+import Layout from "../../layouts/Layout.astro";
+import Hexagon from "../../components/Hexagon.astro";
+import { trouverProjet, listerProjets } from "../../lib/projets";
+
+// Page lue depuis la base : rendue à chaque visite (nécessite l'adaptateur Astro, ex : @astrojs/node)
+export const prerender = false;
+
+const icon = (name: string) => `/icons/${name}.svg`;
+
+// ---------- Données ----------
+const { id } = Astro.params;
+const p = id ? trouverProjet(id) : null;
+
+// Projet introuvable : on affiche la page 404 du site (src/pages/404.astro)
+if (!p) return Astro.rewrite("/404");
+
+// Projet précédent / suivant (on boucle aux extrémités)
+const tous = listerProjets();
+const position = tous.findIndex((x) => x.id === p.id);
+const precedent = tous.length > 1 ? tous[(position - 1 + tous.length) % tous.length] : null;
+const suivant = tous.length > 1 ? tous[(position + 1) % tous.length] : null;
+
+// Les textes peuvent contenir des paragraphes séparés par une ligne vide
+const paragraphes = (texte: string | null) => (texte ?? "").split(/\n{2,}/).map((t) => t.trim()).filter(Boolean);
+
+// Mêmes trois styles de carte que la page /projets
+const themes = [
+  { card: "bg-miel text-encre", num: "text-encre/30" },
+  { card: "bg-nuit text-neige", num: "text-soleil" },
+  { card: "bg-white text-encre ring-1 ring-black/5", num: "text-soleil" },
+];
+
+const aDepart = p.departTitre || p.departTexte || p.departObjectif;
+const aDemarche = p.etapes.length > 0;
+const aRecul = p.apprentissages.length > 0;
+
+// Classe réutilisable (la même que l'index)
+const container = "mx-auto w-full max-w-7xl px-5 sm:px-8";
+---
+
+<Layout title={`${p.titre} — Nathan Batista Balanche`}>
+  <div id="pd">
+    <!-- ======================= HERO ======================= -->
+    <section class="relative isolate overflow-hidden bg-nuit text-neige">
+      <div aria-hidden="true" class="pointer-events-none absolute inset-0 -z-10">
+        <div class="pd-honey absolute inset-0"></div>
+        <div class="pd-drift absolute -left-32 top-10 h-96 w-96 rounded-full bg-soleil/15 blur-3xl"></div>
+        <div class="pd-drift pd-drift-rev absolute -right-24 bottom-0 h-[28rem] w-[28rem] rounded-full bg-azur/30 blur-3xl"></div>
+      </div>
+
+      <div class={`${container} pb-28 pt-12 sm:pb-32 lg:pt-16`}>
+        <a
+          href="/projets"
+          class="pd-in group inline-flex items-center gap-2 font-inter text-sm font-medium text-neige/75 transition hover:text-soleil focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-soleil"
+          style="--i:0"
+        >
+          <img
+            src={icon("yellow_arrow")}
+            alt=""
+            width="16"
+            height="16"
+            class="h-4 w-4 rotate-180 transition-transform duration-300 group-hover:-translate-x-1.5"
+          />
+          Tous les projets
+        </a>
+
+        <div class="mt-10 grid items-center gap-12 lg:grid-cols-[1.05fr_1fr] lg:gap-16">
+          <div>
+            <p class="pd-in flex items-center gap-3 font-inter text-xs font-bold uppercase tracking-[0.14em] text-soleil" style="--i:1">
+              <Hexagon class="w-3.5" fill="var(--color-soleil)" />
+              {p.surtitre}
+            </p>
+
+            <h1 class="pd-in mt-6 text-balance font-outfit text-4xl font-light leading-[1.08] tracking-tight sm:text-5xl lg:text-6xl" style="--i:2">
+              {p.titrePage}
+            </h1>
+
+            <p class="pd-in mt-8 max-w-xl text-base leading-relaxed text-neige/85 sm:text-lg" style="--i:3">
+              {p.resume}
+            </p>
+
+            <ul class="pd-in mt-8 flex flex-wrap gap-2" style="--i:4">
+              {p.categories.map((c) => (
+                <li class="rounded-full bg-soleil px-3.5 py-1.5 font-inter text-xs font-bold text-encre">{c.nom}</li>
+              ))}
+              {p.tags.map((tag) => (
+                <li class="rounded-full bg-white/10 px-3.5 py-1.5 font-inter text-xs font-medium text-neige">{tag}</li>
+              ))}
+            </ul>
+
+            {
+              p.lienUrl && (
+                <a
+                  href={p.lienUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="pd-in group mt-10 inline-flex items-center gap-3 rounded-full bg-soleil px-7 py-4 font-outfit text-sm font-bold text-encre shadow-lg shadow-soleil/20 transition duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-soleil/30 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-neige"
+                  style="--i:5"
+                >
+                  {p.lienLibelle ?? "Voir le projet"}
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1">
+                    <path d="M7 17 17 7" />
+                    <path d="M7 7h10v10" />
+                  </svg>
+                  <span class="sr-only">(s’ouvre dans un nouvel onglet)</span>
+                </a>
+              )
+            }
+          </div>
+
+          <!-- Visuel principal -->
+          <div class="pd-in relative" style="--i:3">
+            <div class="relative aspect-[4/3] overflow-hidden rounded-3xl bg-black/20 shadow-2xl shadow-black/40 ring-1 ring-white/10">
+              <!-- Visuel de secours : visible si l'image n'existe pas encore -->
+              <div aria-hidden="true" class="absolute inset-0 grid place-items-center bg-linear-to-br from-abysse via-nuit to-encre">
+                <Hexagon class="absolute -right-6 -top-6 w-40 opacity-90" fill="var(--color-soleil)" />
+                <Hexagon class="absolute -bottom-8 -left-6 w-32 opacity-70" stroke="var(--color-azur)" strokeWidth={2} />
+                <span class="relative font-outfit text-sm font-medium text-neige/60">Visuel à venir</span>
+              </div>
+
+              {p.image && (
+                <img
+                  data-cover
+                  src={p.image}
+                  alt={p.imageAlt ?? `Aperçu du projet ${p.titre}`}
+                  width="1280"
+                  height="960"
+                  class="relative h-full w-full object-cover"
+                />
+              )}
+            </div>
+            <Hexagon aria-hidden="true" class="pd-float absolute -bottom-9 -right-5 hidden w-20 sm:block" fill="var(--color-soleil)" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================= INFOS + CORPS ======================= -->
+    <section class="relative isolate bg-neige pb-20 text-nuit sm:pb-28">
+      <!-- Bandeau Contexte / Rôle / Équipe / Durée / Outils -->
+      {
+        p.infos.length > 0 && (
+          <div class={`${container} relative z-10 -mt-12`} data-reveal>
+            <dl class="grid gap-x-8 gap-y-6 rounded-3xl bg-white p-7 shadow-xl shadow-nuit/10 ring-1 ring-black/5 sm:grid-cols-2 sm:p-9 lg:grid-cols-[repeat(auto-fit,minmax(11rem,1fr))]">
+              {p.infos.map((info) => (
+                <div>
+                  <dt class="flex items-center gap-2 font-inter text-xs font-bold uppercase tracking-[0.12em] text-graphite/60">
+                    <Hexagon class="w-2.5 shrink-0" fill="var(--color-soleil)" />
+                    {info.libelle}
+                  </dt>
+                  <dd class="mt-2 font-outfit text-base font-medium leading-snug">{info.valeur}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        )
+      }
+
+      <!-- Le point de départ -->
+      {
+        aDepart && (
+          <div class={`${container} ${p.infos.length > 0 ? "pt-20 sm:pt-28" : "pt-16"}`}>
+            <div class="grid gap-10 lg:grid-cols-[1.2fr_1fr] lg:gap-16" data-reveal>
+              <div>
+                <h2 class="text-balance font-outfit text-3xl font-bold leading-tight sm:text-4xl">
+                  {p.departTitre ?? "Le point de départ"}
+                </h2>
+                <div class="mt-6 max-w-2xl space-y-4 leading-relaxed text-graphite/85">
+                  {paragraphes(p.departTexte).map((t) => (
+                    <p>{t}</p>
+                  ))}
+                </div>
+              </div>
+
+              {p.departObjectif && (
+                <aside class="relative self-start overflow-hidden rounded-3xl bg-nuit p-8 text-neige shadow-sm sm:p-10">
+                  <Hexagon aria-hidden="true" class="absolute -right-6 -top-6 w-24 opacity-90" fill="var(--color-soleil)" />
+                  <p class="relative flex items-center gap-2.5 font-inter text-xs font-bold uppercase tracking-[0.14em] text-soleil">
+                    Objectif
+                  </p>
+                  <p class="relative mt-4 font-outfit text-xl font-light leading-snug sm:text-2xl">{p.departObjectif}</p>
+                </aside>
+              )}
+            </div>
+          </div>
+        )
+      }
+
+      <!-- La démarche -->
+      {
+        aDemarche && (
+          <div class={`${container} pt-20 sm:pt-28`}>
+            <div class="max-w-3xl" data-reveal>
+              <h2 class="text-balance font-outfit text-3xl font-bold leading-tight sm:text-4xl">
+                {p.demarcheTitre ?? "La démarche"}
+              </h2>
+              {p.demarcheIntro && <p class="mt-5 leading-relaxed text-graphite/85">{p.demarcheIntro}</p>}
+            </div>
+
+            <ol class="mt-12 grid gap-6 md:grid-cols-2">
+              {p.etapes.map((e, i) => {
+                const t = themes[(i + Math.floor(i / 2)) % themes.length];
+                return (
+                  <li data-reveal style={`--d:${(i % 2) * 110}ms`}>
+                    <article class={`flex h-full flex-col rounded-3xl p-7 shadow-sm sm:p-9 ${t.card}`}>
+                      <span class={`font-outfit text-5xl font-light leading-none ${t.num}`} aria-hidden="true">
+                        {e.numero}
+                      </span>
+                      <h3 class="mt-6 font-outfit text-2xl font-bold">
+                        <span class="sr-only">Étape {e.numero} : </span>
+                        {e.titre}
+                      </h3>
+                      <p class="mt-3 leading-relaxed opacity-85">{e.description}</p>
+                    </article>
+                  </li>
+                );
+              })}
+            </ol>
+          </div>
+        )
+      }
+    </section>
+
+    <!-- ======================= AVEC LE RECUL ======================= -->
+    {
+      aRecul && (
+        <section class="relative isolate overflow-hidden bg-nuit py-20 text-neige sm:py-28" aria-labelledby="recul">
+          <div aria-hidden="true" class="pointer-events-none absolute inset-0 -z-10">
+            <div class="pd-honey absolute inset-0"></div>
+            <div class="pd-drift absolute -right-24 top-0 h-96 w-96 rounded-full bg-azur/25 blur-3xl"></div>
+          </div>
+
+          <div class={container}>
+            <div class="max-w-3xl" data-reveal>
+              <h2 id="recul" class="text-balance font-outfit text-3xl font-bold leading-tight sm:text-4xl">
+                {p.reculTitre ?? "Avec le recul"}
+              </h2>
+            </div>
+
+            <ul class="mt-12 grid gap-6 md:grid-cols-3">
+              {p.apprentissages.map((a, i) => (
+                <li data-reveal style={`--d:${(i % 3) * 110}ms`}>
+                  <article class="flex h-full flex-col rounded-3xl bg-white/5 p-7 ring-1 ring-white/10 sm:p-8">
+                    <span class="relative grid h-14 w-14 place-items-center" aria-hidden="true">
+                      <Hexagon class="absolute inset-0 h-full w-full" fill="var(--color-soleil)" />
+                      {a.icone ? (
+                        <img data-icone src={icon(a.icone)} alt="" width="22" height="22" class="relative h-[22px] w-[22px]" />
+                      ) : null}
+                    </span>
+                    <h3 class="mt-6 font-outfit text-xl font-bold">{a.titre}</h3>
+                    <p class="mt-3 leading-relaxed text-neige/80">{a.texte}</p>
+                  </article>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      )
+    }
+
+    <!-- ======================= PROJET PRÉCÉDENT / SUIVANT ======================= -->
+    {
+      precedent && suivant && (
+        <section class="bg-neige py-16 text-nuit sm:py-20" aria-label="Autres projets">
+          <div class={`${container} grid gap-6 md:grid-cols-2`} data-reveal>
+            <a
+              href={`/projets/${precedent.id}`}
+              class="group flex flex-col gap-2 rounded-3xl bg-white p-7 shadow-sm ring-1 ring-black/5 transition duration-500 hover:-translate-y-2 hover:shadow-2xl hover:shadow-nuit/20 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-soleil"
+            >
+              <span class="flex items-center gap-2 font-inter text-xs font-bold uppercase tracking-[0.12em] text-graphite/60">
+                <img src={icon("yellow_arrow")} alt="" width="14" height="14" class="h-3.5 w-3.5 rotate-180 transition-transform duration-300 group-hover:-translate-x-1.5" />
+                Projet précédent
+              </span>
+              <span class="font-outfit text-2xl font-bold">{precedent.titre}</span>
+              <span class="font-inter text-sm text-graphite/70">{precedent.typeLibelle}</span>
+            </a>
+
+            <a
+              href={`/projets/${suivant.id}`}
+              class="group flex flex-col gap-2 rounded-3xl bg-miel p-7 text-encre shadow-sm transition duration-500 hover:-translate-y-2 hover:shadow-2xl hover:shadow-nuit/20 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-soleil md:items-end md:text-right"
+            >
+              <span class="flex items-center gap-2 font-inter text-xs font-bold uppercase tracking-[0.12em] text-encre/60">
+                Projet suivant
+                <img src={icon("yellow_arrow")} alt="" width="14" height="14" class="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1.5" />
+              </span>
+              <span class="font-outfit text-2xl font-bold">{suivant.titre}</span>
+              <span class="font-inter text-sm text-encre/70">{suivant.typeLibelle}</span>
+            </a>
+          </div>
+        </section>
+      )
+    }
+
+    <!-- ======================= BANDEAU ======================= -->
+    <section class="relative isolate overflow-hidden bg-soleil text-encre">
+      <div aria-hidden="true" class="pd-honey-band pointer-events-none absolute inset-0 -z-10"></div>
+
+      <div class={`${container} flex items-center gap-6 py-14 sm:gap-10 sm:py-16`} data-reveal>
+        <svg
+          class="pd-arrow hidden h-14 w-20 shrink-0 text-cuivre sm:block"
+          viewBox="0 0 80 56"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="7"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M6 28h62"></path>
+          <path d="m50 8 20 20-20 20"></path>
+        </svg>
+
+        <div class="flex-1">
+          <h2 class="text-balance font-outfit text-3xl font-bold leading-tight sm:text-4xl">
+            Une question sur ce projet ?
+          </h2>
+          <p class="mt-3 max-w-3xl leading-relaxed text-encre/80">
+            Je détaille volontiers mes choix, mes outils et ce que je referais autrement. Écris-moi, je réponds
+            avec plaisir.
+          </p>
+        </div>
+
+        <a
+          href="/contact"
+          class="hidden shrink-0 items-center rounded-full bg-encre px-7 py-4 font-outfit text-sm font-bold text-neige transition duration-300 hover:-translate-y-1 hover:shadow-xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-encre md:inline-flex"
+        >
+          Me contacter
+        </a>
+      </div>
+    </section>
+  </div>
+</Layout>
+
+<style>
+  /* ---------- Nid d'abeilles ---------- */
+  .pd-honey {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='56' viewBox='0 0 100 56'%3E%3Cpath d='M66 28L50 0L16 0L0 28L16 56L50 56L66 28L100 28' fill='none' stroke='white' stroke-opacity='.06'/%3E%3Cpath d='M0 28L34 28L50 0L84 0L100 28L84 56L50 56L34 28' fill='none' stroke='white' stroke-opacity='.06'/%3E%3C/svg%3E");
+    background-size: 120px 67px;
+    mask-image: radial-gradient(ellipse at 75% 40%, #000 0%, transparent 75%);
+  }
+  .pd-honey-band {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='56' viewBox='0 0 100 56'%3E%3Cpath d='M66 28L50 0L16 0L0 28L16 56L50 56L66 28L100 28' fill='none' stroke='%230f0f0f' stroke-opacity='.1'/%3E%3Cpath d='M0 28L34 28L50 0L84 0L100 28L84 56L50 56L34 28' fill='none' stroke='%230f0f0f' stroke-opacity='.1'/%3E%3C/svg%3E");
+    background-size: 120px 67px;
+    mask-image: radial-gradient(ellipse at 85% 50%, #000 0%, transparent 75%);
+  }
+
+  /* ---------- Lueurs / flottement ---------- */
+  .pd-drift {
+    animation: pd-drift 16s ease-in-out infinite;
+  }
+  .pd-drift-rev {
+    animation-direction: reverse;
+    animation-delay: -8s;
+  }
+  @keyframes pd-drift {
+    0%,
+    100% {
+      transform: translate3d(0, 0, 0);
+    }
+    50% {
+      transform: translate3d(40px, 18px, 0);
+    }
+  }
+
+  .pd-float {
+    animation: pd-float 9s ease-in-out infinite;
+  }
+  @keyframes pd-float {
+    0%,
+    100% {
+      transform: translate3d(0, 0, 0);
+    }
+    50% {
+      transform: translate3d(0, -10px, 0);
+    }
+  }
+
+  .pd-arrow {
+    animation: pd-nudge 2.4s ease-in-out infinite;
+  }
+  @keyframes pd-nudge {
+    0%,
+    100% {
+      transform: translateX(0);
+    }
+    50% {
+      transform: translateX(8px);
+    }
+  }
+
+  /* ---------- Apparition du hero au chargement ---------- */
+  .pd-in {
+    animation: pd-in 0.95s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: calc(var(--i, 0) * 100ms + 120ms);
+  }
+  @keyframes pd-in {
+    from {
+      opacity: 0;
+      transform: translateY(26px);
+    }
+  }
+
+  /* ---------- Apparition au scroll ---------- */
+  .pd-ready [data-reveal] {
+    opacity: 0;
+    transform: translateY(32px);
+    transition:
+      opacity 0.8s ease,
+      transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+    transition-delay: var(--d, 0ms);
+  }
+  .pd-ready [data-reveal].is-in {
+    opacity: 1;
+    transform: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation: none !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+</style>
+
+<script>
+  const root = document.getElementById("pd");
+
+  if (root) {
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    // ----- Apparition au scroll (sans JS ou animations réduites : tout reste visible) -----
+    if (!reduceMotion && "IntersectionObserver" in window) {
+      root.classList.add("pd-ready");
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("is-in");
+              observer.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.12, rootMargin: "0px 0px -6% 0px" },
+      );
+      root.querySelectorAll("[data-reveal]").forEach((el) => observer.observe(el));
+    }
+
+    // ----- Image ou icône manquante : on garde le visuel de secours / l'hexagone seul -----
+    root.querySelectorAll<HTMLImageElement>("img[data-cover], img[data-icone]").forEach((img) => {
+      const masquer = () => {
+        img.hidden = true;
+      };
+      img.addEventListener("error", masquer, { once: true });
+      if (img.complete && img.naturalWidth === 0 && img.currentSrc) masquer();
+    });
+  }
+</script>
