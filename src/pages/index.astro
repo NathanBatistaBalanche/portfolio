@@ -1,7 +1,8 @@
 ---
 /**
  * src/pages/index.astro
- * Page d'accueil : Hero, À propos, Projets (statiques), Compétences, Parcours, CTA.
+ * Page d'accueil : Hero animé + bandeau défilant, À propos, Projets (statiques),
+ * Compétences, Parcours (frise en hexagones), CTA.
  * Le Header et le Footer (avec « Besoin de me contacter ? ») sont dans le Layout.
  *
  * Icônes : /public/icons/*.svg — Images : /public/images/*
@@ -13,9 +14,23 @@ const icon = (name: string) => `/icons/${name}.svg`;
 
 // ---------- Données statiques (à remplacer par la base de données plus tard) ----------
 const stats = [
-  { value: "01", label: "année en MMI", color: "text-soleil" },
-  { value: "03", label: "domaines complémentaires", color: "text-soleil" },
-  { value: "100 %", label: "curieux et impliqué", color: "text-miel" },
+  { to: 1, pad: 2, suffix: "", label: "année en MMI", color: "text-soleil" },
+  { to: 3, pad: 2, suffix: "", label: "domaines complémentaires", color: "text-soleil" },
+  { to: 100, pad: 0, suffix: " %", label: "curieux et impliqué", color: "text-miel" },
+];
+const fmt = (to: number, pad: number, suffix: string) => String(to).padStart(pad, "0") + suffix;
+
+const marquee = [
+  "HTML",
+  "CSS",
+  "JavaScript",
+  "Intégration responsive",
+  "Accessibilité",
+  "UX / UI",
+  "Prototypage",
+  "Base de données",
+  "Motion design",
+  "Narration",
 ];
 
 const qualities = ["Curiosité", "Esprit d’équipe", "Rigueur", "Culture numérique", "Envie d’apprendre"];
@@ -29,9 +44,8 @@ const projects = [
     image: "/images/projets/ordaily.webp",
     alt: "Maquette de l’application OrDaily sur ordinateur et mobile",
     card: "bg-miel text-encre",
-    label: "text-cuivre",
-    tagsColor: "text-encre/70",
-    dot: "bg-safran",
+    tagsColor: "text-encre/75",
+    chip: "bg-encre/10 text-encre",
   },
   {
     slug: "les-rives-du-territoire",
@@ -41,9 +55,8 @@ const projects = [
     image: "/images/projets/les-rives-du-territoire.webp",
     alt: "Site Les Rives du Territoire affiché sur un ordinateur portable",
     card: "bg-nuit text-neige",
-    label: "text-miel",
-    tagsColor: "text-neige/70",
-    dot: "bg-soleil",
+    tagsColor: "text-neige/75",
+    chip: "bg-white/10 text-neige",
   },
   {
     slug: "emminent",
@@ -53,9 +66,8 @@ const projects = [
     image: "/images/projets/emminent.webp",
     alt: "Interface Emminent, espace de travail avec chat intelligent",
     card: "bg-white text-encre ring-1 ring-black/5",
-    label: "text-cuivre",
-    tagsColor: "text-graphite/70",
-    dot: "bg-soleil",
+    tagsColor: "text-graphite/75",
+    chip: "bg-nuit/5 text-nuit",
   },
 ];
 
@@ -74,295 +86,712 @@ const timeline = [
 
 // Classes réutilisables
 const container = "mx-auto w-full max-w-7xl px-5 sm:px-8";
-const eyebrow = "flex items-center gap-2.5 font-inter text-xs font-bold text-safran";
+const eyebrow = "flex items-center gap-3 font-inter text-xs font-bold uppercase tracking-[0.14em] text-safran";
 const btnBase =
-  "inline-flex items-center gap-3 rounded-xl px-5 py-3 font-outfit text-sm font-bold transition duration-300 hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-soleil";
-const btnYellow = `${btnBase} bg-soleil text-encre hover:bg-miel`;
-const btnOutline = `${btnBase} border border-white/40 text-neige hover:border-soleil hover:text-soleil`;
-const btnDark = `${btnBase} bg-nuit text-neige hover:bg-abysse`;
+  "group relative isolate inline-flex items-center gap-3 overflow-hidden rounded-xl px-6 py-3.5 font-outfit text-sm font-bold transition duration-300 hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-soleil";
+const btnYellow = `${btnBase} ix-shine bg-linear-tsoleilo-br from-miel via-soleil to-safran text-encre shadow-lg shadow-soleil/25 hover:shadow-xl hover:shadow-soleil/40`;
+const btnOutline = `${btnBase} border border-white/40 text-neige hover:border- hover:text-soleil`;
+const btnDark = `${btnBase} ix-shine bg-nuit text-neige shadow-lg shadow-nuit/25 hover:bg-abysse`;
 const btnGhost = `${btnBase} border border-graphite/30 text-nuit hover:border-nuit hover:bg-nuit hover:text-neige`;
 ---
 
 <Layout>
-  <!-- ======================= HERO ======================= -->
-  <section class="relative overflow-hidden bg-nuit text-neige">
-    <div class={`${container} grid items-center gap-12 pb-20 pt-14 lg:grid-cols-2 lg:gap-8 lg:pb-28 lg:pt-20`}>
-      <div>
-        <p class="inline-flex items-center gap-2.5 rounded-full bg-abysse px-4 py-2 font-inter text-xs text-neige/90">
-          <span class="h-2.5 w-2.5 rounded-full bg-soleil"></span>
-          Disponible pour un stage, une alternance ou un premier emploi
-        </p>
+  <div id="ix">
+    <!-- ======================= HERO ======================= -->
+    <section class="relative isolate overflow-hidden bg-nuit text-neige">
+      <!-- Décor : nid d'abeilles, lueurs -->
+      <div aria-hidden="true" class="pointer-events-none absolute inset-0 -z-10">
+        <div class="ix-honey-dark absolute inset-0"></div>
+        <div class="ix-drift absolute -left-32 top-10 h-96 w-96 rounded-full bg-soleil/15 blur-3xl"></div>
+        <div class="ix-drift ix-drift-rev absolute -right-24 bottom-0 h-[28rem] w-[28rem] rounded-full bg-azur/30 blur-3xl"></div>
+      </div>
 
-        <h1 class="mt-8 font-outfit text-5xl font-light leading-[1.05] tracking-tight sm:text-6xl lg:text-7xl">
-          Je conçois des expériences numériques avec du <span class="text-soleil">code.</span>
-        </h1>
+      <div class={`${container} grid items-center gap-16 pb-20 pt-14 lg:grid-cols-2 lg:gap-10 lg:pb-28 lg:pt-20`}>
+        <div>
+          <p class="ix-in inline-flex items-center gap-3 rounded-full border border-white/10 bg-abysse/80 px-4 py-2 font-inter text-xs text-neige/90 backdrop-blur" style="--i:0">
+            <span class="ix-ping h-2.5 w-2.5 rounded-full bg-soleil"></span>
+            Disponible pour un stage, une alternance ou un premier emploi
+          </p>
 
-        <p class="mt-8 max-w-xl text-base leading-relaxed text-neige/85 sm:text-lg">
-          Étudiant en BUT MMI (Bachelor Universitaire de Technologie Métiers du Multimédia et de l’Internet), je m’oriente
-          vers le développement web tout en gardant une approche créative et narrative.
-        </p>
+          <h1 class="ix-in mt-8 font-outfit text-5xl font-light leading-[1.05] tracking-tight sm:text-6xl lg:text-7xl" style="--i:1">
+            Je conçois des expériences numériques avec du <span class="ix-grad font-medium">code.</span><span class="ix-caret" aria-hidden="true"></span>
+          </h1>
 
-        <div class="mt-8 flex flex-wrap gap-4">
-          <a href="/projets" class={btnYellow}>
-            Voir mes projets
-            <img src={icon("arrow_bottom")} alt="" width="16" height="16" class="h-4 w-4" />
+          <p class="ix-in mt-8 max-w-xl text-base leading-relaxed text-neige/85 sm:text-lg" style="--i:2">
+            Étudiant en BUT MMI (Bachelor Universitaire de Technologie Métiers du Multimédia et de l’Internet), je m’oriente
+            vers le développement web tout en gardant une approche créative et narrative.
+          </p>
+
+          <div class="ix-in mt-9 flex flex-wrap gap-4" style="--i:3">
+            <a href="/projets" class={btnYellow}>
+              Voir mes projets
+              <img src={icon("arrow_bottom")} alt="" width="16" height="16" class="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:translate-y-0.5" />
+            </a>
+            <a href="/contact" class={btnOutline}>
+              Me contacter
+              <img src={icon("white_contact")} alt="" width="18" height="18" class="h-[18px] w-[18px] transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+            </a>
+          </div>
+
+          <dl class="ix-in mt-14 grid max-w-xl grid-cols-3 gap-6" style="--i:4">
+            {
+              stats.map((s) => (
+                <div class="border-t border-white/15 pt-4">
+                  <dt
+                    class={`font-outfit text-3xl font-bold sm:text-4xl ${s.color}`}
+                    data-count
+                    data-to={s.to}
+                    data-pad={s.pad}
+                    data-suffix={s.suffix}
+                  >
+                    {fmt(s.to, s.pad, s.suffix)}
+                  </dt>
+                  <dd class="mt-2 text-xs text-neige/75 sm:text-sm">{s.label}</dd>
+                </div>
+              ))
+            }
+          </dl>
+        </div>
+
+        <!-- Visuel -->
+        <div class="ix-in relative mx-auto w-full max-w-xl lg:max-w-none" style="--i:2">
+          <!-- Cadre décalé derrière l'image -->
+          <div aria-hidden="true" class="absolute -right-3 -top-3 h-full w-full rounded-[2rem] border border-soleil/40 sm:-right-5 sm:-top-5"></div>
+
+          <div data-tilt class="ix-tilt relative overflow-hidden rounded-[2rem] shadow-2xl shadow-black/50 ring-1 ring-white/10">
+            <img
+              src="/images/homepage_code.webp"
+              alt="Code affiché sur un écran d’ordinateur"
+              width="800"
+              height="640"
+              fetchpriority="high"
+              class="aspect-[5/4] w-full object-cover"
+            />
+            <div class="absolute inset-0 bg-linear-to-tr from-nuit/50 via-transparent to-soleil/10"></div>
+          </div>
+
+          <span aria-hidden="true" class="ix-float absolute -left-6 top-10 w-20 drop-shadow-xl sm:-left-10 sm:w-28" style="--r:-6deg">
+            <Hexagon class="block w-full" fill="var(--color-soleil)" />
+          </span>
+          <span aria-hidden="true" class="ix-float absolute -bottom-10 -left-4 w-20 sm:-left-8 sm:w-24" style="--d:-4s;--r:8deg">
+            <Hexagon class="block w-full" fill="var(--color-nuit)" stroke="var(--color-soleil)" strokeWidth={3} />
+          </span>
+
+          <!-- Pastille « stack » -->
+          <div class="ix-float absolute -right-2 top-6 hidden items-center gap-2.5 rounded-2xl border border-white/15 bg-nuit/70 px-4 py-2.5 font-inter text-xs font-semibold text-neige shadow-xl backdrop-blur-md sm:flex" style="--d:-2s">
+            <span class="font-mono text-soleil">&lt;/&gt;</span>
+            HTML · CSS · JS
+          </div>
+
+          <div class="absolute -bottom-7 right-4 max-w-60 rounded-2xl bg-neige p-4 text-encre shadow-2xl sm:right-6">
+            <p class="flex items-center gap-2 font-outfit text-sm font-bold">
+              <span class="h-2 w-2 rounded-full bg-soleil"></span>
+              Concevoir · coder · déployer
+            </p>
+            <p class="mt-1.5 text-xs leading-relaxed text-graphite/70">Mon processus préféré, du premier croquis à la mise en ligne.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bandeau défilant -->
+      <div class="relative border-t border-white/10 bg-nuit/60 py-5 backdrop-blur-sm" aria-label="Compétences clés">
+        <div class="ix-marquee overflow-hidden">
+          <div class="ix-marquee-track flex w-max">
+            {
+              [0, 1].map((n) => (
+                <ul aria-hidden={n === 1 ? "true" : undefined} class="flex shrink-0 items-center gap-10 pr-10">
+                  {marquee.map((m) => (
+                    <li class="flex items-center gap-10 font-outfit text-lg font-medium text-neige/70 sm:text-xl">
+                      {m}
+                      <Hexagon class="w-3 shrink-0" fill="var(--color-soleil)" />
+                    </li>
+                  ))}
+                </ul>
+              ))
+            }
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================= EN QUELQUES MOTS ======================= -->
+    <section class="relative isolate overflow-hidden bg-neige text-nuit">
+      <div aria-hidden="true" class="ix-honey-light pointer-events-none absolute inset-0 -z-10"></div>
+
+      <div class={`${container} grid gap-12 py-24 sm:py-32 lg:grid-cols-[1fr_2fr] lg:gap-16`}>
+        <div data-reveal>
+          <p class="ix-grad-stroke font-outfit text-7xl font-bold leading-none sm:text-8xl">01.</p>
+
+          <!-- Nid d'abeilles -->
+          <div class="ix-cluster relative mt-10 h-[10.4rem] w-60" aria-hidden="true">
+            <Hexagon class="absolute left-0 top-[2.6rem] w-24 scale-95" stroke="var(--color-nuit)" />
+            <Hexagon class="absolute left-18 top-0 w-24 scale-95" fill="var(--color-soleil)" />
+            <Hexagon class="absolute left-36 top-[2.6rem] w-24 scale-95" fill="var(--color-abysse)" />
+            <Hexagon class="absolute left-18 top-[5.2rem] w-24 scale-95" stroke="var(--color-nuit)" />
+          </div>
+        </div>
+
+        <div data-reveal style="--d:120ms">
+          <p class={eyebrow}>
+            <Hexagon class="w-3.5" fill="var(--color-soleil)" />
+            En quelques mots
+          </p>
+
+          <h2 class="mt-5 max-w-2xl text-balance font-outfit text-3xl font-bold leading-tight text-nuit sm:text-4xl lg:text-[2.6rem]">
+            Un profil MMI centré sur le <span class="ix-underline">développement web</span>, avec une vision créative.
+          </h2>
+
+          <p class="mt-6 max-w-2xl leading-relaxed text-graphite/65">
+            En MMI, je consolide une base solide en développement web tout en gardant une approche créative et narrative.
+            Je cherche un environnement où apprendre, produire et améliorer des interfaces utiles, avec une vision claire
+            et documentée.
+          </p>
+
+          <ul class="mt-7 flex flex-wrap gap-3">
+            {
+              qualities.map((q, i) => (
+                <li
+                  class:list={[
+                    "rounded-full border px-4 py-2 text-xs font-medium transition duration-300 hover:-translate-y-0.5",
+                    i === 0
+                      ? "border-soleil bg-soleil text-encre shadow-md shadow-soleil/30"
+                      : "border-graphite/15 bg-white/60 text-graphite/65 hover:border-soleil hover:bg-miel/40 hover:text-encre",
+                  ]}
+                >
+                  {q}
+                </li>
+              ))
+            }
+          </ul>
+
+          <a href="/parcours" class={`${btnDark} mt-9`}>
+            Découvrir mon parcours
+            <img src={icon("journey")} alt="" width="18" height="18" class="h-[18px] w-[18px]" />
           </a>
-          <a href="/contact" class={btnOutline}>
-            Me contacter
-            <img src={icon("white_contact")} alt="" width="18" height="18" class="h-[18px] w-[18px]" />
-          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================= PROJETS ======================= -->
+    <section class="bg-neige pb-24 text-nuit sm:pb-32" aria-labelledby="projets-title">
+      <div class={container}>
+        <div class="flex flex-col gap-6 md:flex-row md:items-end md:justify-between" data-reveal>
+          <div class="max-w-2xl">
+            <p class={eyebrow}>
+              <Hexagon class="w-3.5" fill="var(--color-soleil)" />
+              Projets
+            </p>
+            <h2 id="projets-title" class="mt-4 text-balance font-outfit text-3xl font-bold leading-tight sm:text-4xl lg:text-5xl">
+              Des projets pour concevoir, <span class="ix-underline">coder</span> et déployer.
+            </h2>
+            <p class="mt-4 text-graphite/65">
+              Des projets de cours et personnels qui montrent une progression vers le développement web, avec une attention
+              au design et à la communication.
+            </p>
+          </div>
+          <a href="/projets" class={`${btnGhost} shrink-0 self-start md:self-end`}>Tous les projets</a>
         </div>
 
-        <dl class="mt-12 grid max-w-xl grid-cols-3 gap-6">
+        <ul class="mt-14 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {
-            stats.map((s) => (
-              <div>
-                <dt class={`font-outfit text-3xl font-bold sm:text-4xl ${s.color}`}>{s.value}</dt>
-                <dd class="mt-2 text-xs text-neige/80 sm:text-sm">{s.label}</dd>
-              </div>
-            ))
-          }
-        </dl>
-      </div>
+            projects.map((p, i) => (
+              <li data-reveal style={`--d:${i * 110}ms`}>
+                <a
+                  href={`/projets/${p.slug}`}
+                  class:list={[
+                    "group flex h-full flex-col overflow-hidden rounded-3xl shadow-sm transition duration-500 hover:-translate-y-2 hover:shadow-2xl hover:shadow-nuit/20 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-soleil",
+                    p.card,
+                  ]}
+                >
+                  <div class="relative aspect-[4/3] overflow-hidden bg-black/5">
+                    <img
+                      src={p.image}
+                      alt={p.alt}
+                      width="640"
+                      height="480"
+                      loading="lazy"
+                      class="h-full w-full object-cover transition duration-700 group-hover:scale-110"
+                    />
+                    <span class="absolute left-4 top-4 rounded-full bg-white/85 px-3 py-1.5 font-inter text-[0.68rem] font-bold uppercase tracking-wide text-encre backdrop-blur">
+                      {p.type}
+                    </span>
+                    <span class="absolute right-4 top-4 grid h-11 w-11 scale-75 place-items-center rounded-full bg-soleil text-encre opacity-0 shadow-lg transition duration-300 group-hover:scale-100 group-hover:opacity-100">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M7 17 17 7" />
+                        <path d="M7 7h10v10" />
+                      </svg>
+                    </span>
+                  </div>
 
-      <!-- Visuel -->
-      <div class="relative">
-        <div class="relative overflow-hidden rounded-[2rem] shadow-2xl shadow-black/40">
-          <img
-            src="/images/homepage_code.webp"
-            alt="Code affiché sur un écran d’ordinateur"
-            width="800"
-            height="640"
-            fetchpriority="high"
-            class="aspect-[5/4] w-full object-cover"
-          />
-          <div class="absolute inset-0 bg-linear-to-tr from-nuit/40 to-transparent"></div>
-        </div>
-
-        <div class="absolute -bottom-6 right-4 max-w-56 rounded-2xl bg-neige p-4 text-encre shadow-xl sm:right-6">
-          <p class="font-outfit text-sm font-bold">Concevoir · coder · déployer</p>
-          <p class="mt-1 text-xs text-graphite/70">Mon processus préféré, du premier croquis à la mise en ligne.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ======================= EN QUELQUES MOTS ======================= -->
-  <section class="bg-neige text-nuit">
-    <div class={`${container} grid gap-12 py-20 sm:py-28 lg:grid-cols-[1fr_2fr] lg:gap-16`}>
-      <div>
-        <p class="font-outfit text-7xl font-bold leading-none text-soleil sm:text-8xl">01.</p>
-
-        <!-- Nid d'abeilles : colonnes décalées de 0,75 × largeur, lignes de 0,5 × hauteur -->
-        <div class="relative mt-10 h-[10.4rem] w-60" aria-hidden="true">
-          <Hexagon class="absolute left-0 top-[2.6rem] w-24 scale-95" stroke="var(--color-nuit)" />
-          <Hexagon class="absolute left-18 top-0 w-24 scale-95" fill="var(--color-soleil)" />
-          <Hexagon class="absolute left-36 top-[2.6rem] w-24 scale-95" fill="var(--color-abysse)" />
-          <Hexagon class="absolute left-18 top-[5.2rem] w-24 scale-95" stroke="var(--color-nuit)" />
-        </div>
-      </div>
-
-      <div>
-        <p class={eyebrow}>
-          <span class="h-2.5 w-2.5 rounded-full bg-soleil"></span>
-          EN QUELQUES MOTS
-        </p>
-
-        <h2 class="mt-5 max-w-2xl font-outfit text-3xl font-bold leading-tight text-nuit sm:text-4xl lg:text-[2.6rem]">
-          Un profil MMI centré sur le développement web, avec une vision créative.
-        </h2>
-
-        <p class="mt-6 max-w-2xl leading-relaxed text-graphite/60">
-          En MMI, je consolide une base solide en développement web tout en gardant une approche créative et narrative.
-          Je cherche un environnement où apprendre, produire et améliorer des interfaces utiles, avec une vision claire
-          et documentée.
-        </p>
-
-        <ul class="mt-6 flex flex-wrap gap-3">
-          {
-            qualities.map((q, i) => (
-              <li
-                class:list={[
-                  "rounded-full px-4 py-1.5 text-xs font-medium",
-                  i === 0 ? "bg-soleil text-encre" : "text-graphite/50",
-                ]}
-              >
-                {q}
+                  <div class="flex flex-1 flex-col p-6">
+                    <h3 class="font-outfit text-2xl font-bold">{p.title}</h3>
+                    <ul class="mt-4 flex flex-wrap gap-2">
+                      {p.tags.split(" · ").map((t) => (
+                        <li class={`rounded-full px-3 py-1 text-xs font-medium ${p.chip}`}>{t}</li>
+                      ))}
+                    </ul>
+                    <p class="mt-auto flex items-center gap-2 pt-7 font-outfit text-sm font-bold">
+                      Voir le projet en détail
+                      <img
+                        src={icon("yellow_arrow")}
+                        alt=""
+                        width="16"
+                        height="16"
+                        class="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1.5"
+                      />
+                    </p>
+                  </div>
+                </a>
               </li>
             ))
           }
         </ul>
-
-        <a href="/parcours" class={`${btnDark} mt-8`}>
-          Découvrir mon parcours
-          <img src={icon("journey")} alt="" width="18" height="18" class="h-[18px] w-[18px]" />
-        </a>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- ======================= PROJETS ======================= -->
-  <section class="bg-neige pb-20 text-nuit sm:pb-28" aria-labelledby="projets-title">
-    <div class={container}>
-      <div class="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-        <div class="max-w-2xl">
-          <p class={eyebrow}>
-            <span class="h-2.5 w-2.5 rounded-full bg-soleil"></span>
-            PROJETS
-          </p>
-          <h2 id="projets-title" class="mt-4 font-outfit text-3xl font-bold leading-tight sm:text-4xl">
-            Des projets pour concevoir, coder et déployer.
-          </h2>
-          <p class="mt-4 text-graphite/60">
-            Des projets de cours et personnels qui montrent une progression vers le développement web, avec une attention
-            au design et à la communication.
-          </p>
+    <!-- ======================= COMPÉTENCES ======================= -->
+    <section class="relative isolate overflow-hidden bg-nuit text-neige" aria-labelledby="competences-title">
+      <div aria-hidden="true" class="pointer-events-none absolute inset-0 -z-10">
+        <div class="ix-honey-dark absolute inset-0"></div>
+        <div class="ix-drift absolute -right-20 top-0 h-80 w-80 rounded-full bg-soleil/10 blur-3xl"></div>
+      </div>
+
+      <div class={`${container} py-24 sm:py-32`}>
+        <div class="flex flex-col gap-8 md:flex-row md:items-end md:justify-between" data-reveal>
+          <div class="max-w-3xl">
+            <p class="flex items-center gap-3 font-inter text-xs font-bold uppercase tracking-[0.14em] text-soleil">
+              <Hexagon class="w-3.5" fill="var(--color-soleil)" />
+              Compétences
+            </p>
+            <h2 id="competences-title" class="mt-4 text-balance font-outfit text-3xl font-bold leading-tight sm:text-4xl lg:text-5xl">
+              Une voie principale en <span class="ix-grad">développement web</span>, avec des compétences complémentaires en
+              création et communication.
+            </h2>
+            <p class="mt-5 text-neige/80">
+              Une progression MMI centrée sur le développement web, avec une vision créative et narrative.
+            </p>
+          </div>
+          <a href="/a-propos" class={`${btnYellow} shrink-0 self-start md:self-end`}>Voir toutes mes compétences</a>
         </div>
-        <a href="/projets" class={`${btnGhost} shrink-0 self-start md:self-end`}>Tous les projets</a>
-      </div>
 
-      <ul class="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {
-          projects.map((p) => (
-            <li>
-              <a
-                href={`/projets/${p.slug}`}
-                class:list={[
-                  "group flex h-full flex-col overflow-hidden rounded-3xl transition duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-black/15 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-soleil",
-                  p.card,
-                ]}
+        <!-- Ligne avec point voyageur -->
+        <div class="relative mt-14 h-px bg-white/10" aria-hidden="true">
+          <span class="ix-travel absolute -top-1.5 h-3 w-3 rounded-full bg-soleil shadow-[0_0_16px_var(--color-soleil)]"></span>
+        </div>
+
+        <ul class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {
+            skills.map((s, i) => (
+              <li
+                data-reveal
+                style={`--d:${i * 100}ms`}
+                class="group relative overflow-hidden rounded-3xl border border-white/10 bg-abysse/80 p-7 backdrop-blur transition duration-500 hover:-translate-y-2 hover:border-soleil/50 hover:shadow-2xl hover:shadow-black/40"
               >
-                <div class="aspect-[4/3] overflow-hidden bg-black/5">
-                  <img
-                    src={p.image}
-                    alt={p.alt}
-                    width="640"
-                    height="480"
-                    loading="lazy"
-                    class="h-full w-full object-cover transition duration-500 group-hover:scale-105"
-                  />
-                </div>
+                <span aria-hidden="true" class="absolute right-5 top-3 font-outfit text-6xl font-bold text-white/5 transition-colors duration-500 group-hover:text-soleil/15">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <span aria-hidden="true" class="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-soleil/70 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"></span>
 
-                <div class="relative flex flex-1 flex-col p-6">
-                  <span class={`absolute right-6 top-6 h-3 w-3 rounded-full ${p.dot}`} aria-hidden="true" />
-                  <p class={`font-inter text-[0.7rem] font-bold uppercase ${p.label}`}>{p.type}</p>
-                  <h3 class="mt-2 font-outfit text-2xl font-bold">{p.title}</h3>
-                  <p class={`mt-3 text-sm leading-relaxed ${p.tagsColor}`}>{p.tags}</p>
-                  <p class="mt-auto flex items-center gap-2 pt-6 font-outfit text-sm font-bold">
-                    Voir le projet en détail
-                    <img
-                      src={icon("yellow_arrow")}
-                      alt=""
-                      width="16"
-                      height="16"
-                      class="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1"
-                    />
-                  </p>
-                </div>
-              </a>
-            </li>
-          ))
-        }
-      </ul>
-    </div>
-  </section>
+                <span class="ix-hex relative grid h-[3.46rem] w-16 place-items-center bg-miel transition duration-500 group-hover:rotate-6 group-hover:bg-soleil">
+                  <img src={icon(s.icon)} alt="" width="24" height="24" class="h-6 w-6" />
+                </span>
+                <h3 class="mt-7 font-outfit text-xl font-bold">{s.title}</h3>
+                <p class="mt-3 text-sm leading-relaxed text-neige/75">{s.text}</p>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </section>
 
-  <!-- ======================= COMPÉTENCES ======================= -->
-  <section class="bg-nuit text-neige" aria-labelledby="competences-title">
-    <div class={`${container} py-20 sm:py-28`}>
-      <div class="flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
-        <div class="max-w-3xl">
-          <p class="flex items-center gap-2.5 font-inter text-xs font-bold text-soleil">
-            <span class="h-2.5 w-2.5 rounded-full bg-soleil"></span>
-            COMPÉTENCES
+    <!-- ======================= PARCOURS ======================= -->
+    <section class="relative isolate overflow-hidden bg-neige text-nuit" aria-labelledby="parcours-title">
+      <div aria-hidden="true" class="ix-honey-light pointer-events-none absolute inset-0 -z-10"></div>
+
+      <div class={`${container} grid gap-14 py-24 sm:py-32 lg:grid-cols-[2fr_3fr] lg:gap-20`}>
+        <div data-reveal class="lg:sticky lg:top-32 lg:self-start">
+          <p class={eyebrow}>
+            <Hexagon class="w-3.5" fill="var(--color-soleil)" />
+            Mon parcours
           </p>
-          <h2 id="competences-title" class="mt-4 font-outfit text-3xl font-bold leading-tight sm:text-4xl lg:text-5xl">
-            Une voie principale en développement web, avec des compétences complémentaires en création et communication.
+          <h2 id="parcours-title" class="mt-4 text-balance font-outfit text-3xl font-bold leading-tight sm:text-4xl lg:text-5xl">
+            Deux années pour consolider le <span class="ix-underline">développement web</span>.
           </h2>
-          <p class="mt-5 text-neige/80">
-            Une progression MMI centrée sur le développement web, avec une vision créative et narrative.
+          <p class="mt-5 text-graphite/65">
+            Une progression MMI centrée sur le développement web, avec des projets concrets et des apprentissages
+            documentés.
+          </p>
+          <a href="/parcours" class={`${btnGhost} mt-9`}>
+            Découvrir mon parcours
+            <img src={icon("arrow_bottom")} alt="" width="16" height="16" class="h-4 w-4 -rotate-45 transition-transform duration-300 group-hover:translate-x-0.5" />
+          </a>
+        </div>
+
+        <!--
+          Frise : l'hexagone est collé en haut de chaque étape, le trait part de son bord bas
+          jusqu'au bord haut du suivant. Hexagone w-10 : hauteur 2,165rem.
+        -->
+        <ol class="flex flex-col">
+          {
+            timeline.map((t, i) => {
+              const isLast = i === timeline.length - 1;
+              return (
+                <li data-reveal style={`--d:${i * 120}ms`} class="relative pb-12 pl-16 last:pb-0 sm:pl-20">
+                  <Hexagon
+                    class="absolute left-0 top-0 z-10 w-10"
+                    fill={isLast ? "var(--color-soleil)" : "var(--color-neige)"}
+                    stroke="var(--color-cuivre)"
+                    strokeWidth={3}
+                  />
+                  {!isLast && (
+                    <span class="absolute bottom-0 left-5 top-[2.165rem] w-0.5 -translate-x-1/2 bg-linear-to-b from-cuivre to-cuivre/30" aria-hidden="true" />
+                  )}
+
+                  <p class="flex h-[2.165rem] items-center font-outfit text-2xl font-bold text-cuivre">{t.year}</p>
+                  <div class="mt-3 rounded-3xl bg-white p-6 ring-1 ring-black/5 transition duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-nuit/10">
+                    <h3 class="font-outfit text-lg font-bold leading-snug text-encre">{t.title}</h3>
+                    <p class="mt-2 text-sm leading-relaxed text-graphite/65">{t.text}</p>
+                  </div>
+                </li>
+              );
+            })
+          }
+        </ol>
+      </div>
+    </section>
+
+    <!-- ======================= CTA ======================= -->
+    <section class="ix-cta relative isolate overflow-hidden text-encre" aria-labelledby="cta-title">
+      <div aria-hidden="true" class="ix-honey-cta pointer-events-none absolute inset-0 -z-10"></div>
+      <span aria-hidden="true" class="ix-float absolute -right-10 -top-10 -z-10 hidden w-56 md:block" style="--r:10deg">
+        <Hexagon class="block w-full" stroke="var(--color-encre)" strokeWidth={1.2} />
+      </span>
+      <span aria-hidden="true" class="ix-float absolute bottom-[-3rem] right-[22%] -z-10 hidden w-28 md:block" style="--d:-3s;--r:-8deg">
+        <Hexagon class="block w-full" fill="rgb(255 255 255 / 0.35)" />
+      </span>
+
+      <div class={`${container} flex flex-col gap-10 py-20 md:flex-row md:items-center md:justify-between`} data-reveal>
+        <div>
+          <p class="flex items-center gap-3 font-inter text-xs font-bold uppercase tracking-[0.14em] text-cuivre">
+            <Hexagon class="w-3.5" fill="var(--color-encre)" />
+            Un premier projet, une première expérience
+          </p>
+          <h2 id="cta-title" class="mt-4 max-w-3xl text-balance font-outfit text-3xl font-light leading-tight sm:text-4xl lg:text-5xl">
+            Vous cherchez un jeune <span class="font-bold">développeur web</span> curieux, créatif et prêt à apprendre ?
+          </h2>
+        </div>
+
+        <div class="shrink-0 md:text-center">
+          <a href="/contact" class={`${btnDark} px-8 py-5 text-base`}>
+            Discuter d’un projet
+            <img src={icon("white_contact")} alt="" width="18" height="18" class="h-[18px] w-[18px] transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+          </a>
+          <p class="mt-4 flex items-center justify-center gap-2 text-xs font-medium text-encre/70">
+            <span class="ix-ping-dark h-2 w-2 rounded-full bg-encre"></span>
+            Réponse habituelle sous 48 h.
           </p>
         </div>
-        <a href="/a-propos" class={`${btnYellow} shrink-0 self-start md:self-end`}>Voir toutes mes compétences</a>
       </div>
-
-      <div class="relative mt-12 h-px bg-white/10" aria-hidden="true">
-        <span class="absolute -top-1.5 right-[12%] h-3 w-3 rounded-full bg-soleil"></span>
-      </div>
-
-      <ul class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        {
-          skills.map((s) => (
-            <li class="rounded-3xl bg-abysse p-6 transition duration-300 hover:-translate-y-1 hover:ring-1 hover:ring-soleil/50">
-              <span class="flex h-12 w-12 items-center justify-center rounded-xl bg-miel">
-                <img src={icon(s.icon)} alt="" width="24" height="24" class="h-6 w-6" />
-              </span>
-              <h3 class="mt-6 font-outfit text-xl font-bold">{s.title}</h3>
-              <p class="mt-3 text-sm leading-relaxed text-neige/75">{s.text}</p>
-            </li>
-          ))
-        }
-      </ul>
-    </div>
-  </section>
-
-  <!-- ======================= PARCOURS ======================= -->
-  <section class="bg-neige text-nuit" aria-labelledby="parcours-title">
-    <div class={`${container} grid gap-12 py-20 sm:py-28 lg:grid-cols-[2fr_3fr] lg:gap-20`}>
-      <div>
-        <p class={eyebrow}>
-          <span class="h-2.5 w-2.5 rounded-full bg-soleil"></span>
-          MON PARCOURS
-        </p>
-        <h2 id="parcours-title" class="mt-4 font-outfit text-3xl font-bold leading-tight sm:text-4xl lg:text-5xl">
-          Deux années pour consolider le développement web.
-        </h2>
-        <p class="mt-5 text-graphite/60">
-          Une progression MMI centrée sur le développement web, avec des projets concrets et des apprentissages
-          documentés.
-        </p>
-        <a href="/parcours" class={`${btnDark} mt-8`}>
-          Découvrir mon parcours
-          <img src={icon("arrow_bottom")} alt="" width="16" height="16" class="h-4 w-4 -rotate-45" />
-        </a>
-      </div>
-
-      <ol class="flex flex-col gap-10 lg:pt-2">
-        {
-          timeline.map((t) => (
-            <li class="grid gap-3 sm:grid-cols-[6rem_1fr] sm:gap-6">
-              <p class="flex items-center gap-3 font-outfit text-sm font-bold text-safran">
-                <span class="h-2.5 w-2.5 rounded-full bg-soleil" aria-hidden="true" />
-                {t.year}
-              </p>
-              <div>
-                <h3 class="font-outfit text-lg font-bold">{t.title}</h3>
-                <p class="mt-2 text-sm leading-relaxed text-graphite/55">{t.text}</p>
-              </div>
-            </li>
-          ))
-        }
-      </ol>
-    </div>
-  </section>
-
-  <!-- ======================= CTA ======================= -->
-  <section class="bg-soleil text-encre" aria-labelledby="cta-title">
-    <div class={`${container} flex flex-col gap-8 py-14 md:flex-row md:items-center md:justify-between`}>
-      <div>
-        <p class="font-inter text-xs font-semibold text-cuivre">UN PREMIER PROJET, UNE PREMIÈRE EXPÉRIENCE</p>
-        <h2 id="cta-title" class="mt-3 max-w-3xl font-outfit text-3xl font-light leading-tight sm:text-4xl">
-          Vous cherchez un jeune développeur web curieux, créatif et prêt à apprendre ?
-        </h2>
-      </div>
-
-      <div class="shrink-0 md:text-center">
-        <a href="/contact" class={`${btnDark} px-6 py-4`}>
-          Discuter d’un projet
-          <img src={icon("white_contact")} alt="" width="18" height="18" class="h-[18px] w-[18px]" />
-        </a>
-        <p class="mt-3 text-xs text-cuivre">Réponse habituelle sous 48 h.</p>
-      </div>
-    </div>
-  </section>
+    </section>
+  </div>
 </Layout>
+
+<style>
+  /* ---------- Nid d'abeilles (3 variantes) ---------- */
+  .ix-honey-dark {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='56' viewBox='0 0 100 56'%3E%3Cpath d='M66 28L50 0L16 0L0 28L16 56L50 56L66 28L100 28' fill='none' stroke='white' stroke-opacity='.06'/%3E%3Cpath d='M0 28L34 28L50 0L84 0L100 28L84 56L50 56L34 28' fill='none' stroke='white' stroke-opacity='.06'/%3E%3C/svg%3E");
+    background-size: 120px 67px;
+    mask-image: radial-gradient(ellipse at 70% 40%, #000 0%, transparent 75%);
+  }
+  .ix-honey-light {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='56' viewBox='0 0 100 56'%3E%3Cpath d='M66 28L50 0L16 0L0 28L16 56L50 56L66 28L100 28' fill='none' stroke='%2311273b' stroke-opacity='.06'/%3E%3Cpath d='M0 28L34 28L50 0L84 0L100 28L84 56L50 56L34 28' fill='none' stroke='%2311273b' stroke-opacity='.06'/%3E%3C/svg%3E");
+    background-size: 120px 67px;
+    mask-image: radial-gradient(ellipse at 85% 30%, #000 0%, transparent 70%);
+  }
+  .ix-honey-cta {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='56' viewBox='0 0 100 56'%3E%3Cpath d='M66 28L50 0L16 0L0 28L16 56L50 56L66 28L100 28' fill='none' stroke='%230f0f0f' stroke-opacity='.1'/%3E%3Cpath d='M0 28L34 28L50 0L84 0L100 28L84 56L50 56L34 28' fill='none' stroke='%230f0f0f' stroke-opacity='.1'/%3E%3C/svg%3E");
+    background-size: 120px 67px;
+    mask-image: radial-gradient(ellipse at 80% 50%, #000 0%, transparent 80%);
+  }
+
+  /* ---------- Texte ---------- */
+  .ix-grad {
+    background: linear-gradient(100deg, var(--color-miel), var(--color-soleil) 50%, var(--color-safran));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .ix-grad-stroke {
+    background: linear-gradient(135deg, var(--color-miel), var(--color-soleil) 45%, var(--color-safran));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    filter: drop-shadow(0 10px 18px color-mix(in srgb, var(--color-soleil) 35%, transparent));
+  }
+  .ix-underline {
+    background-image: linear-gradient(90deg, var(--color-soleil), var(--color-safran));
+    background-repeat: no-repeat;
+    background-position: 0 92%;
+    background-size: 100% 0.22em;
+    padding-bottom: 0.05em;
+  }
+  .ix-caret {
+    display: inline-block;
+    width: 0.07em;
+    height: 0.85em;
+    margin-left: 0.12em;
+    vertical-align: -0.08em;
+    border-radius: 2px;
+    background: var(--color-soleil);
+    animation: ix-blink 1.1s steps(2, start) infinite;
+  }
+  @keyframes ix-blink {
+    to {
+      visibility: hidden;
+    }
+  }
+
+  /* ---------- Hexagone en clip-path (badges d'icônes) ---------- */
+  .ix-hex {
+    clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%);
+  }
+
+  /* ---------- Cluster 01 ---------- */
+  :global(.ix-cluster svg) {
+    animation: ix-pulse 5s ease-in-out infinite;
+    transform-origin: center;
+  }
+  :global(.ix-cluster svg:nth-child(2)) {
+    animation-delay: -1.2s;
+  }
+  :global(.ix-cluster svg:nth-child(3)) {
+    animation-delay: -2.4s;
+  }
+  :global(.ix-cluster svg:nth-child(4)) {
+    animation-delay: -3.6s;
+  }
+  @keyframes ix-pulse {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.55;
+    }
+  }
+
+  /* ---------- Lueurs / flottement ---------- */
+  .ix-drift {
+    animation: ix-drift 16s ease-in-out infinite;
+  }
+  .ix-drift-rev {
+    animation-direction: reverse;
+    animation-delay: -8s;
+  }
+  @keyframes ix-drift {
+    0%,
+    100% {
+      transform: translate3d(0, 0, 0);
+    }
+    50% {
+      transform: translate3d(40px, 18px, 0);
+    }
+  }
+
+  .ix-float {
+    animation: ix-float 9s ease-in-out infinite;
+    animation-delay: var(--d, 0s);
+  }
+  @keyframes ix-float {
+    0%,
+    100% {
+      transform: translate3d(0, 0, 0) rotate(var(--r, 0deg));
+    }
+    50% {
+      transform: translate3d(0, -14px, 0) rotate(calc(var(--r, 0deg) + 7deg));
+    }
+  }
+
+  .ix-ping {
+    animation: ix-ping 1.8s ease-out infinite;
+  }
+  @keyframes ix-ping {
+    0% {
+      box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-soleil) 70%, transparent);
+    }
+    100% {
+      box-shadow: 0 0 0 10px transparent;
+    }
+  }
+  .ix-ping-dark {
+    animation: ix-ping-dark 1.8s ease-out infinite;
+  }
+  @keyframes ix-ping-dark {
+    0% {
+      box-shadow: 0 0 0 0 rgb(15 15 15 / 0.5);
+    }
+    100% {
+      box-shadow: 0 0 0 9px transparent;
+    }
+  }
+
+  /* ---------- Apparition du hero au chargement ---------- */
+  .ix-in {
+    animation: ix-in 0.95s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: calc(var(--i, 0) * 100ms + 120ms);
+  }
+  @keyframes ix-in {
+    from {
+      opacity: 0;
+      transform: translateY(26px);
+    }
+  }
+
+  /* ---------- Apparition au scroll (activée par le script) ---------- */
+  .ix-ready [data-reveal] {
+    opacity: 0;
+    transform: translateY(32px);
+    transition:
+      opacity 0.8s ease,
+      transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+    transition-delay: var(--d, 0ms);
+  }
+  .ix-ready [data-reveal].is-in {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* ---------- Reflet des boutons (même signature que Header / Footer) ---------- */
+  .ix-shine::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: -1;
+    width: 40%;
+    background: linear-gradient(100deg, transparent, rgb(255 255 255 / 0.5), transparent);
+    transform: translateX(-220%) skewX(-20deg);
+    transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .ix-shine:hover::before,
+  .ix-shine:focus-visible::before {
+    transform: translateX(520%) skewX(-20deg);
+  }
+
+  /* ---------- Bandeau défilant ---------- */
+  .ix-marquee {
+    mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  }
+  .ix-marquee-track {
+    animation: ix-marquee 45s linear infinite;
+  }
+  .ix-marquee:hover .ix-marquee-track {
+    animation-play-state: paused;
+  }
+  @keyframes ix-marquee {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  /* ---------- Point voyageur ---------- */
+  .ix-travel {
+    animation: ix-travel 9s ease-in-out infinite alternate;
+  }
+  @keyframes ix-travel {
+    from {
+      left: 0;
+    }
+    to {
+      left: calc(100% - 0.75rem);
+    }
+  }
+
+  /* ---------- Inclinaison de l'image du hero ---------- */
+  .ix-tilt {
+    transition: transform 0.35s ease;
+    will-change: transform;
+  }
+
+  /* ---------- CTA ---------- */
+  .ix-cta {
+    background: linear-gradient(115deg, var(--color-soleil) 0%, var(--color-miel) 55%, var(--color-soleil) 100%);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation: none !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+</style>
+
+<script>
+  const root = document.getElementById("ix");
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  if (root && !reduceMotion) {
+    // ----- Apparition au scroll (sans JS ou animations réduites : tout reste visible) -----
+    if ("IntersectionObserver" in window) {
+      root.classList.add("ix-ready");
+      const reveal = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("is-in");
+              reveal.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.12, rootMargin: "0px 0px -6% 0px" },
+      );
+      root.querySelectorAll("[data-reveal]").forEach((el) => reveal.observe(el));
+
+      // ----- Compteurs du hero -----
+      const format = (el: HTMLElement, v: number) =>
+        String(Math.round(v)).padStart(Number(el.dataset.pad ?? 0), "0") + (el.dataset.suffix ?? "");
+
+      const counters = root.querySelectorAll<HTMLElement>("[data-count]");
+      counters.forEach((el) => (el.textContent = format(el, 0)));
+
+      const counting = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            const el = entry.target as HTMLElement;
+            const to = Number(el.dataset.to ?? 0);
+            const start = performance.now();
+            const duration = 1400;
+            const step = (now: number) => {
+              const t = Math.min((now - start) / duration, 1);
+              el.textContent = format(el, to * (1 - Math.pow(1 - t, 3)));
+              if (t < 1) requestAnimationFrame(step);
+            };
+            requestAnimationFrame(step);
+            counting.unobserve(el);
+          });
+        },
+        { threshold: 0.6 },
+      );
+      counters.forEach((el) => counting.observe(el));
+    }
+
+    // ----- Inclinaison 3D de l'image (souris uniquement) -----
+    if (window.matchMedia("(hover: hover)").matches) {
+      root.querySelectorAll<HTMLElement>("[data-tilt]").forEach((el) => {
+        el.addEventListener("pointermove", (e) => {
+          const r = el.getBoundingClientRect();
+          const x = (e.clientX - r.left) / r.width - 0.5;
+          const y = (e.clientY - r.top) / r.height - 0.5;
+          el.style.transform = `perspective(900px) rotateX(${(-y * 6).toFixed(2)}deg) rotateY(${(x * 8).toFixed(2)}deg)`;
+        });
+        el.addEventListener("pointerleave", () => {
+          el.style.transform = "";
+        });
+      });
+    }
+  }
+</script>
