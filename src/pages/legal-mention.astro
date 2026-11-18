@@ -1,7 +1,331 @@
 ---
-import Layout from '../layouts/Layout.astro';
+/**
+ * src/pages/mentions-legales.astro
+ * Mentions légales (loi pour la confiance dans l'économie numérique, LCEN).
+ * Page autonome : seul le composant Hexagon est utilisé. Header et Footer sont dans le Layout.
+ *
+ * ⚠️ À COMPLÉTER AVANT MISE EN LIGNE : `config.host` (fournisseur du VPS). Si tu utilises des
+ * images de banques d'images ou d'un générateur, ajoute leurs crédits dans la section « Crédits ».
+ */
+import Layout from "../layouts/Layout.astro";
+import Hexagon from "../components/Hexagon.astro";
+
+// ---------- À COMPLÉTER ----------
+const config = {
+  lastUpdate: "19 novembre 2026",
+  isoDate: "2026-11-19",
+  name: "Nathan Batista Balanche",
+  city: "Montbéliard (France)",
+  email: "batistabalanchenathan@gmail.com",
+  host: "À compléter : nom et adresse du fournisseur de ton VPS (ex : OVH SAS, 2 rue Kellermann, 59100 Roubaix)",
+};
+
+// Classes réutilisables
+const container = "mx-auto w-full max-w-7xl px-5 sm:px-8";
+const h2 = "flex items-baseline gap-4 font-outfit text-2xl font-bold leading-tight text-encre sm:text-3xl";
+const num = "font-outfit text-lg font-bold text-cuivre";
+const p = "mt-4 leading-relaxed text-graphite/80";
+const ul = "mt-4 flex flex-col gap-2 pl-5 list-disc marker:text-soleil text-graphite/80 leading-relaxed";
+const link =
+  "font-medium text-azur underline decoration-azur/30 underline-offset-4 transition-colors hover:text-nuit hover:decoration-soleil focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-soleil";
+const section = "scroll-mt-28 border-t border-graphite/10 pt-10 first:border-t-0 first:pt-0";
+
+const sections = [
+  { id: "editeur", title: "Éditeur du site" },
+  { id: "hebergeur", title: "Hébergement" },
+  { id: "propriete", title: "Propriété intellectuelle" },
+  { id: "responsabilite", title: "Responsabilité" },
+  { id: "liens", title: "Liens hypertextes" },
+  { id: "donnees", title: "Données personnelles et cookies" },
+  { id: "credits", title: "Crédits" },
+  { id: "droit", title: "Droit applicable" },
+];
+
+// Fiche d'identité de l'éditeur
+const publisher = [
+  ["Éditeur", config.name],
+  ["Statut", "Personne physique, étudiant en BUT MMI"],
+  ["Nature du site", "Portfolio personnel, sans but commercial"],
+  ["Localisation", config.city],
+  ["Directeur de la publication", config.name],
+  ["Contact", config.email],
+];
+
+const dlLabel = "font-inter text-[0.7rem] font-bold uppercase tracking-[0.14em] text-cuivre";
+const card = "mt-6 rounded-3xl bg-white p-6 ring-1 ring-black/5 sm:p-7";
 ---
 
 <Layout>
-	<p></p>
+  <!-- ======================= HERO ======================= -->
+  <section class="relative overflow-hidden bg-nuit text-neige" aria-labelledby="legal-title">
+    <div class={`${container} relative py-16 sm:py-24`}>
+      <p class="flex items-center gap-3 font-inter text-sm font-bold text-soleil">
+        <Hexagon class="w-4" fill="var(--color-soleil)" />
+        INFORMATIONS LÉGALES
+      </p>
+
+      <h1
+        id="legal-title"
+        class="mt-6 max-w-3xl font-outfit text-5xl font-light leading-[1.08] tracking-tight sm:text-6xl"
+      >
+        Mentions légales.
+      </h1>
+
+      <p class="mt-6 max-w-2xl text-lg leading-relaxed text-neige/85">
+        Les informations légales relatives à l’éditeur, à l’hébergement et à l’utilisation de ce site.
+      </p>
+
+      <p class="mt-8 inline-flex items-center gap-2.5 rounded-full bg-abysse px-4 py-2 font-inter text-xs text-neige/90">
+        <span class="h-2.5 w-2.5 rounded-full bg-soleil" aria-hidden="true"></span>
+        Dernière mise à jour : <time datetime={config.isoDate}>{config.lastUpdate}</time>
+      </p>
+
+      <!-- Nid d'abeilles décoratif -->
+      <div class="absolute right-8 top-1/2 hidden h-[9.1rem] w-[13.1rem] -translate-y-1/2 lg:block xl:right-12" aria-hidden="true">
+        <Hexagon class="absolute left-0 top-[2.27rem] w-[5.25rem] scale-95" fill="var(--color-neige)" stroke="var(--color-abysse)" />
+        <Hexagon class="absolute left-[3.94rem] top-0 w-[5.25rem] scale-95" fill="var(--color-soleil)" />
+        <Hexagon class="absolute left-[7.88rem] top-[2.27rem] w-[5.25rem] scale-95" fill="var(--color-azur)" />
+        <Hexagon class="absolute left-[3.94rem] top-[4.55rem] w-[5.25rem] scale-95" fill="var(--color-neige)" stroke="var(--color-abysse)" />
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================= CONTENU ======================= -->
+  <div class="bg-neige text-nuit">
+    <div class={`${container} grid gap-12 py-16 sm:py-24 lg:grid-cols-[19rem_1fr] lg:gap-16`}>
+      <!-- Sommaire -->
+      <aside class="lg:sticky lg:top-28 lg:self-start">
+        <nav
+          aria-label="Sommaire"
+          class="rounded-3xl bg-white p-6 shadow-sm shadow-nuit/5 ring-1 ring-black/5 sm:p-7"
+        >
+          <div class="flex items-center justify-between gap-3">
+            <p class="flex items-center gap-3 font-inter text-xs font-bold uppercase tracking-[0.14em] text-cuivre">
+              <Hexagon class="w-3.5" fill="var(--color-soleil)" />
+              Sommaire
+            </p>
+            <p class="text-xs text-graphite/50">{sections.length} rubriques</p>
+          </div>
+
+          <div class="mt-5 h-px bg-linear-to-r from-graphite/15 to-transparent"></div>
+
+          <div class="relative mt-5">
+            <!-- Fil vertical + progression (desktop) -->
+            <span aria-hidden="true" class="absolute bottom-[1.475rem] left-[1.125rem] top-[1.475rem] hidden w-0.5 -translate-x-1/2 bg-graphite/10 lg:block"></span>
+            <span
+              id="toc-fill"
+              aria-hidden="true"
+              class="absolute left-[1.125rem] top-[1.475rem] hidden w-0.5 -translate-x-1/2 bg-linear-to-b from-soleil to-safran transition-[height] duration-500 ease-out lg:block"
+              style="height: var(--p, 0px)"></span>
+
+            <ol class="relative grid gap-x-4 sm:grid-cols-2 lg:flex lg:flex-col">
+              {
+                sections.map((s, i) => (
+                  <li>
+                    <a
+                      href={`#${s.id}`}
+                      class="toc-link group flex items-start gap-3 rounded-xl py-2 pr-2 text-sm leading-snug text-graphite/70 transition-colors hover:text-nuit focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-soleil aria-[current=true]:font-semibold aria-[current=true]:text-nuit"
+                    >
+                      <span data-marker class="relative z-10 grid h-[1.949rem] w-9 shrink-0 place-items-center">
+                        <span class="absolute inset-0 bg-graphite/20 transition-colors [clip-path:polygon(25%_0,75%_0,100%_50%,75%_100%,25%_100%,0_50%)] group-hover:bg-soleil group-aria-[current=true]:bg-soleil" />
+                        <span class="absolute inset-[1.5px] bg-white transition-colors [clip-path:polygon(25%_0,75%_0,100%_50%,75%_100%,25%_100%,0_50%)] group-hover:bg-miel group-aria-[current=true]:bg-soleil" />
+                        <span class="relative font-outfit text-xs font-bold text-cuivre group-aria-[current=true]:text-encre">
+                          {String(i + 1).padStart(2, "0")}
+                        </span>
+                      </span>
+                      <span class="pt-[0.45rem]">{s.title}</span>
+                    </a>
+                  </li>
+                ))
+              }
+            </ol>
+          </div>
+        </nav>
+      </aside>
+
+      <!-- Texte -->
+      <article class="min-w-0 max-w-3xl">
+  <div class="flex flex-col gap-14">
+    <!-- 1 -->
+    <section id="editeur" class={section} aria-labelledby="t-editeur">
+      <h2 id="t-editeur" class={h2}><span class={num}>01</span>Éditeur du site</h2>
+      <p class={p}>
+        Conformément à l’article 6 de la loi n° 2004-575 du 21 juin 2004 pour la confiance dans l’économie numérique,
+        voici les informations relatives à l’éditeur de ce site.
+      </p>
+
+      <div class={card}>
+        <h3 class="flex items-center gap-3 font-outfit text-lg font-bold text-encre">
+          <Hexagon class="w-4 shrink-0" fill="var(--color-soleil)" />
+          {config.name}
+        </h3>
+        <dl class="mt-5 grid gap-x-8 gap-y-5 border-t border-graphite/10 pt-5 sm:grid-cols-2">
+          {
+            publisher.map(([label, value]) => (
+              <div>
+                <dt class={dlLabel}>{label}</dt>
+                <dd class="mt-1.5 text-sm leading-relaxed text-graphite/80">
+                  {label === "Contact" ? (
+                    <a href={`mailto:${config.email}`} class={link}>
+                      {value}
+                    </a>
+                  ) : (
+                    value
+                  )}
+                </dd>
+              </div>
+            ))
+          }
+        </dl>
+      </div>
+    </section>
+
+    <!-- 2 -->
+    <section id="hebergeur" class={section} aria-labelledby="t-hebergeur">
+      <h2 id="t-hebergeur" class={h2}><span class={num}>02</span>Hébergement</h2>
+      <p class={p}>
+        Le site est installé sur un serveur privé virtuel (VPS) fourni par :
+      </p>
+
+      <div class={card}>
+        <dl>
+          <dt class={dlLabel}>Hébergeur</dt>
+          <dd class="mt-1.5 text-sm leading-relaxed text-graphite/80">{config.host}</dd>
+        </dl>
+      </div>
+
+      <p class={p}>
+        Le fournisseur met à disposition l’infrastructure ; l’administration du serveur et la maintenance du site sont
+        assurées par l’éditeur.
+      </p>
+    </section>
+
+    <!-- 3 -->
+    <section id="propriete" class={section} aria-labelledby="t-propriete">
+      <h2 id="t-propriete" class={h2}><span class={num}>03</span>Propriété intellectuelle</h2>
+      <p class={p}>
+        L’ensemble des éléments de ce site (textes, visuels, maquettes, logo, identité graphique, structure et code
+        source) est la propriété de l’éditeur, sauf mention contraire. Toute reproduction, représentation, modification
+        ou exploitation, totale ou partielle, sans autorisation écrite préalable, est interdite et constitue une
+        contrefaçon sanctionnée par les articles L.335-2 et suivants du Code de la propriété intellectuelle.
+      </p>
+      <p class={p}>
+        Certains projets présentés ont été réalisés en groupe ou dans un cadre pédagogique : les droits sur ces travaux
+        peuvent être partagés avec leurs co-auteurs. Les marques, logos, images et contenus appartenant à des tiers
+        restent la propriété de leurs titulaires respectifs.
+      </p>
+    </section>
+
+    <!-- 4 -->
+    <section id="responsabilite" class={section} aria-labelledby="t-responsabilite">
+      <h2 id="t-responsabilite" class={h2}><span class={num}>04</span>Responsabilité</h2>
+      <p class={p}>
+        Je m’efforce de fournir des informations exactes et à jour, mais ne peux garantir l’absence d’erreur ou
+        d’omission. Les contenus ont une valeur informative et peuvent être modifiés à tout moment.
+      </p>
+      <p class={p}>
+        L’accès au site peut être interrompu ponctuellement (maintenance, panne, cas de force majeure). L’éditeur ne
+        saurait être tenu responsable d’un dommage résultant de l’utilisation du site ou de l’impossibilité d’y
+        accéder.
+      </p>
+    </section>
+
+    <!-- 5 -->
+    <section id="liens" class={section} aria-labelledby="t-liens">
+      <h2 id="t-liens" class={h2}><span class={num}>05</span>Liens hypertextes</h2>
+      <p class={p}>
+        Ce site contient des liens vers des services externes (LinkedIn, GitHub, Behance). Leur contenu ne relève pas
+        de ma responsabilité et leurs propres conditions d’utilisation s’appliquent.
+      </p>
+      <p class={p}>
+        Les liens vers ce site sont libres, à condition de ne pas porter atteinte à son image ni induire en erreur sur
+        son contenu ou sa provenance.
+      </p>
+    </section>
+
+    <!-- 6 -->
+    <section id="donnees" class={section} aria-labelledby="t-donnees">
+      <h2 id="t-donnees" class={h2}><span class={num}>06</span>Données personnelles et cookies</h2>
+      <p class={p}>
+        Le traitement de vos données personnelles (finalités, durées de conservation, destinataires et exercice de vos
+        droits) est détaillé dans la <a href="/politique-de-confidentialite" class={link}>politique de confidentialité</a>.
+      </p>
+    </section>
+
+    <!-- 7 -->
+    <section id="credits" class={section} aria-labelledby="t-credits">
+      <h2 id="t-credits" class={h2}><span class={num}>07</span>Crédits</h2>
+      <ul class={ul}>
+        <li>
+          <strong class="font-semibold text-encre">Conception, design et développement :</strong> {config.name}.
+        </li>
+        <li>
+          <strong class="font-semibold text-encre">Technologies :</strong> Astro et Tailwind CSS.
+        </li>
+        <li>
+          <strong class="font-semibold text-encre">Polices :</strong> Outfit et Inter, distribuées sous licence SIL Open
+          Font License 1.1.
+        </li>
+      </ul>
+    </section>
+
+    <!-- 8 -->
+    <section id="droit" class={section} aria-labelledby="t-droit">
+      <h2 id="t-droit" class={h2}><span class={num}>08</span>Droit applicable</h2>
+      <p class={p}>
+        Les présentes mentions légales sont régies par le droit français. En cas de litige, et à défaut de résolution
+        amiable, les tribunaux français sont seuls compétents.
+      </p>
+      <p class={p}>
+        Une question ou un signalement concernant le site ? Écrivez-moi à
+        <a href={`mailto:${config.email}`} class={link}>{config.email}</a>.
+      </p>
+    </section>
+  </div>
+      </article>
+    </div>
+  </div>
 </Layout>
+
+<script>
+  // Sommaire : section lue en surbrillance + fil de progression jusqu'à l'hexagone actif.
+  const links = Array.from(document.querySelectorAll<HTMLAnchorElement>(".toc-link"));
+  const fill = document.getElementById("toc-fill");
+  const sections = links
+    .map((a) => document.getElementById(a.getAttribute("href")!.slice(1)))
+    .filter((el): el is HTMLElement => el !== null);
+
+  const center = (el: Element) => {
+    const r = el.getBoundingClientRect();
+    return r.top + r.height / 2;
+  };
+
+  const updateFill = () => {
+    if (!fill) return;
+    const markers = links.map((a) => a.querySelector("[data-marker]")).filter((m): m is Element => m !== null);
+    const activeIndex = links.findIndex((a) => a.getAttribute("aria-current") === "true");
+    if (!markers.length || activeIndex < 0) return;
+    fill.style.setProperty("--p", `${Math.max(0, center(markers[activeIndex]) - center(markers[0]))}px`);
+  };
+
+  if (sections.length && "IntersectionObserver" in window) {
+    const setActive = (id: string) => {
+      links.forEach((a) => a.setAttribute("aria-current", String(a.getAttribute("href") === `#${id}`)));
+      updateFill();
+    };
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+        if (visible[0]) setActive(visible[0].target.id);
+      },
+      { rootMargin: "-15% 0px -70% 0px" },
+    );
+
+    sections.forEach((s) => observer.observe(s));
+    setActive(sections[0].id);
+    window.addEventListener("resize", updateFill);
+  }
+</script>
