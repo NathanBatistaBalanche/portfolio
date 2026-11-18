@@ -1,0 +1,455 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Hexagon from "../components/Hexagon.astro";
+
+// ---------- À COMPLÉTER ----------
+const config = {
+  lastUpdate: "18 novembre 2026",
+  name: "Nathan Batista Balanche",
+  city: "Montbéliard (France)",
+  email: "batistabalanchenathan@gmail.com",
+  host: "VPS Privé",
+  retention: "12 mois",
+};
+
+const sections = [
+  { id: "responsable", title: "Responsable du traitement" },
+  { id: "donnees", title: "Données collectées" },
+  { id: "finalites", title: "Finalités, bases légales et durées" },
+  { id: "cookies", title: "Cookies et traceurs" },
+  { id: "destinataires", title: "Destinataires et services tiers" },
+  { id: "transferts", title: "Transferts hors Union européenne" },
+  { id: "securite", title: "Sécurité des données" },
+  { id: "droits", title: "Vos droits" },
+  { id: "modifications", title: "Modifications de la politique" },
+  { id: "contact", title: "Me contacter" },
+];
+
+const treatments = [
+  {
+    name: "Messages de contact",
+    data: "Nom, adresse e-mail, contenu du message",
+    purpose: "Répondre à votre demande ou à votre proposition",
+    basis: "Intérêt légitime (répondre aux sollicitations reçues)",
+    duration: `Le temps de l’échange, puis ${config.retention} maximum après le dernier contact`,
+  },
+  {
+    name: "Journaux de connexion",
+    data: "Adresse IP, date et heure, pages consultées, navigateur et appareil",
+    purpose: "Sécurité, diagnostic technique et bon fonctionnement du site",
+    basis: "Intérêt légitime (sécurité du site)",
+    duration: "Durée fixée par l’hébergeur, limitée à quelques mois",
+  },
+  {
+    name: "Affichage des polices",
+    data: "Adresse IP transmise à Google lors du chargement des polices Outfit et Inter",
+    purpose: "Afficher la typographie du site",
+    basis: "Intérêt légitime (présentation du site)",
+    duration: "Selon la politique de Google",
+  },
+];
+
+const highlights = [
+  {
+    title: "Données minimales",
+    text: "Seules les données utiles pour répondre à vos messages sont collectées.",
+    icon: '<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/>',
+  },
+  {
+    title: "Aucune revente",
+    text: "Vos données ne sont ni vendues, ni utilisées à des fins publicitaires.",
+    icon: '<path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/><path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/><path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/><path d="m2 2 20 20"/>',
+  },
+  {
+    title: "Vos droits",
+    text: "Vous pouvez les exercer à tout moment en m’écrivant par e-mail.",
+    icon: '<rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>',
+  },
+];
+
+const rights = [
+  ["Droit d’accès", "obtenir la confirmation que vos données sont traitées et en recevoir une copie."],
+  ["Droit de rectification", "faire corriger des données inexactes ou incomplètes."],
+  ["Droit à l’effacement", "demander la suppression de vos données, dans les cas prévus par la loi."],
+  ["Droit à la limitation", "demander le gel temporaire du traitement de vos données."],
+  ["Droit d’opposition", "vous opposer, pour des raisons tenant à votre situation, à un traitement fondé sur l’intérêt légitime."],
+  ["Droit à la portabilité", "récupérer, dans un format structuré, les données que vous m’avez fournies, lorsque ce droit s’applique."],
+];
+
+// Classes réutilisables
+const container = "mx-auto w-full max-w-7xl px-5 sm:px-8";
+const h2 = "flex items-baseline gap-4 font-outfit text-2xl font-bold leading-tight text-encre sm:text-3xl";
+const num = "font-outfit text-lg font-bold text-cuivre";
+const p = "mt-4 leading-relaxed text-graphite/80";
+const ul = "mt-4 flex flex-col gap-2 pl-5 list-disc marker:text-soleil text-graphite/80 leading-relaxed";
+const link =
+  "font-medium text-azur underline decoration-azur/30 underline-offset-4 transition-colors hover:text-nuit hover:decoration-soleil focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-soleil";
+const section = "scroll-mt-28 border-t border-graphite/10 pt-10 first:border-t-0 first:pt-0";
+---
+
+<Layout>
+  <!-- ======================= HERO ======================= -->
+  <section class="relative overflow-hidden bg-nuit text-neige" aria-labelledby="privacy-title">
+    <div class={`${container} relative py-16 sm:py-24`}>
+      <p class="flex items-center gap-3 font-inter text-sm font-bold text-soleil">
+        <Hexagon class="w-4" fill="var(--color-soleil)" />
+        INFORMATIONS LÉGALES
+      </p>
+
+      <h1
+        id="privacy-title"
+        class="mt-6 max-w-3xl font-outfit text-5xl font-light leading-[1.08] tracking-tight sm:text-6xl"
+      >
+        Politique de confidentialité.
+      </h1>
+
+      <p class="mt-6 max-w-2xl text-lg leading-relaxed text-neige/85">
+        Comment sont utilisées vos données personnelles lorsque vous visitez ce portfolio ou que vous me contactez, et
+        comment exercer vos droits.
+      </p>
+
+      <p class="mt-8 inline-flex items-center gap-2.5 rounded-full bg-abysse px-4 py-2 font-inter text-xs text-neige/90">
+        <span class="h-2.5 w-2.5 rounded-full bg-soleil" aria-hidden="true"></span>
+        Dernière mise à jour : <time datetime="2026-11-18">{config.lastUpdate}</time>
+      </p>
+
+      <!-- Nid d'abeilles décoratif -->
+      <div class="absolute right-8 top-1/2 hidden h-[9.1rem] w-[13.1rem] -translate-y-1/2 lg:block xl:right-12" aria-hidden="true">
+        <Hexagon class="absolute left-0 top-[2.27rem] w-[5.25rem] scale-95" fill="var(--color-neige)" stroke="var(--color-abysse)" />
+        <Hexagon class="absolute left-[3.94rem] top-0 w-[5.25rem] scale-95" fill="var(--color-soleil)" />
+        <Hexagon class="absolute left-[7.88rem] top-[2.27rem] w-[5.25rem] scale-95" fill="var(--color-azur)" />
+        <Hexagon class="absolute left-[3.94rem] top-[4.55rem] w-[5.25rem] scale-95" fill="var(--color-neige)" stroke="var(--color-abysse)" />
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================= CONTENU ======================= -->
+  <div class="bg-neige text-nuit">
+    <div class={`${container} grid gap-12 py-16 sm:py-24 lg:grid-cols-[19rem_1fr] lg:gap-16`}>
+      <!-- Sommaire -->
+      <aside class="lg:sticky lg:top-28 lg:self-start">
+        <nav
+          aria-label="Sommaire de la politique de confidentialité"
+          class="rounded-3xl bg-white p-6 shadow-sm shadow-nuit/5 ring-1 ring-black/5 sm:p-7"
+        >
+          <div class="flex items-center justify-between gap-3">
+            <p class="flex items-center gap-3 font-inter text-xs font-bold uppercase tracking-[0.14em] text-cuivre">
+              <Hexagon class="w-3.5" fill="var(--color-soleil)" />
+              Sommaire
+            </p>
+            <p class="text-xs text-graphite/50">{sections.length} rubriques</p>
+          </div>
+
+          <div class="mt-5 h-px bg-linear-to-r from-graphite/15 to-transparent"></div>
+
+          <div class="relative mt-5">
+            <!-- Fil vertical + progression (desktop) -->
+            <span aria-hidden="true" class="absolute bottom-[1.475rem] left-[1.125rem] top-[1.475rem] hidden w-0.5 -translate-x-1/2 bg-graphite/10 lg:block"></span>
+            <span
+              id="toc-fill"
+              aria-hidden="true"
+              class="absolute left-[1.125rem] top-[1.475rem] hidden w-0.5 -translate-x-1/2 bg-linear-to-b from-soleil to-safran transition-[height] duration-500 ease-out lg:block"
+              style="height: var(--p, 0px)"></span>
+
+            <ol class="relative grid gap-x-4 sm:grid-cols-2 lg:flex lg:flex-col">
+              {
+                sections.map((s, i) => (
+                  <li>
+                    <a
+                      href={`#${s.id}`}
+                      class="toc-link group flex items-start gap-3 rounded-xl py-2 pr-2 text-sm leading-snug text-graphite/70 transition-colors hover:text-nuit focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-soleil aria-[current=true]:font-semibold aria-[current=true]:text-nuit"
+                    >
+                      <span data-marker class="relative z-10 grid h-[1.949rem] w-9 shrink-0 place-items-center">
+                        <span class="absolute inset-0 bg-graphite/20 transition-colors [clip-path:polygon(25%_0,75%_0,100%_50%,75%_100%,25%_100%,0_50%)] group-hover:bg-soleil group-aria-[current=true]:bg-soleil" />
+                        <span class="absolute inset-[1.5px] bg-white transition-colors [clip-path:polygon(25%_0,75%_0,100%_50%,75%_100%,25%_100%,0_50%)] group-hover:bg-miel group-aria-[current=true]:bg-soleil" />
+                        <span class="relative font-outfit text-xs font-bold text-cuivre group-aria-[current=true]:text-encre">
+                          {String(i + 1).padStart(2, "0")}
+                        </span>
+                      </span>
+                      <span class="pt-[0.45rem]">{s.title}</span>
+                    </a>
+                  </li>
+                ))
+              }
+            </ol>
+          </div>
+        </nav>
+      </aside>
+
+      <!-- Texte -->
+      <article class="min-w-0 max-w-3xl">
+        <!-- L'essentiel -->
+        <section aria-labelledby="essentiel-title">
+          <h2 id="essentiel-title" class="flex items-center gap-3 font-inter text-xs font-bold uppercase tracking-[0.14em] text-cuivre">
+            <Hexagon class="w-3.5" fill="var(--color-soleil)" />
+            L’essentiel en bref
+          </h2>
+
+          <ul class="mt-5 grid gap-4 sm:grid-cols-3">
+            {
+              highlights.map((h) => (
+                <li class="flex flex-col rounded-3xl bg-white p-6 ring-1 ring-black/5 transition duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-nuit/10">
+                  <span class="flex h-12 w-12 items-center justify-center rounded-xl bg-miel text-encre">
+                    <svg
+                      class="h-6 w-6"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      aria-hidden="true"
+                      set:html={h.icon}
+                    />
+                  </span>
+                  <h3 class="mt-5 font-outfit text-lg font-bold leading-snug text-encre">{h.title}</h3>
+                  <p class="mt-2 text-sm leading-relaxed text-graphite/70">{h.text}</p>
+                </li>
+              ))
+            }
+          </ul>
+        </section>
+
+        <div class="mt-16 flex flex-col gap-14">
+          <!-- 1 -->
+          <section id="responsable" class={section} aria-labelledby="t-responsable">
+            <h2 id="t-responsable" class={h2}><span class={num}>01</span>Responsable du traitement</h2>
+            <p class={p}>
+              Le responsable du traitement des données personnelles collectées sur ce site est <strong class="font-semibold text-encre">{config.name}</strong>,
+              étudiant en BUT MMI (Métiers du Multimédia et de l’Internet), domicilié à {config.city}.
+            </p>
+            <p class={p}>
+              Pour toute question relative à vos données personnelles, vous pouvez me contacter à l’adresse
+              <a href={`mailto:${config.email}`} class={link}>{config.email}</a>.
+            </p>
+          </section>
+
+          <!-- 2 -->
+          <section id="donnees" class={section} aria-labelledby="t-donnees">
+            <h2 id="t-donnees" class={h2}><span class={num}>02</span>Données collectées</h2>
+            <p class={p}>Selon votre usage du site, les données suivantes peuvent être traitées :</p>
+            <ul class={ul}>
+              <li>
+                <strong class="font-semibold text-encre">Les données que vous me transmettez</strong> lorsque vous me
+                contactez : nom, adresse e-mail et contenu de votre message.
+              </li>
+              <li>
+                <strong class="font-semibold text-encre">Les données techniques de connexion</strong> générées
+                automatiquement lors de la consultation : adresse IP, date et heure, pages consultées, type de
+                navigateur et d’appareil.
+              </li>
+            </ul>
+            <p class={p}>
+              Le téléchargement du CV ne donne lieu à aucune collecte de données personnelles par ce site. Je ne
+              demande jamais de données sensibles (santé, opinions, origine, etc.) et je vous invite à ne pas en
+              communiquer dans vos messages.
+            </p>
+          </section>
+
+          <!-- 3 -->
+          <section id="finalites" class={section} aria-labelledby="t-finalites">
+            <h2 id="t-finalites" class={h2}><span class={num}>03</span>Finalités, bases légales et durées</h2>
+            <p class={p}>
+              Chaque traitement repose sur une base légale prévue par le Règlement général sur la protection des
+              données (RGPD) :
+            </p>
+
+            <ul class="mt-6 flex flex-col gap-4">
+              {
+                treatments.map((t) => (
+                  <li class="rounded-3xl bg-white p-6 ring-1 ring-black/5 sm:p-7">
+                    <h3 class="flex items-center gap-3 font-outfit text-lg font-bold text-encre">
+                      <Hexagon class="w-4 shrink-0" fill="var(--color-soleil)" />
+                      {t.name}
+                    </h3>
+                    <dl class="mt-5 grid gap-x-8 gap-y-5 border-t border-graphite/10 pt-5 sm:grid-cols-2">
+                      {[
+                        ["Données", t.data],
+                        ["Finalité", t.purpose],
+                        ["Base légale", t.basis],
+                        ["Conservation", t.duration],
+                      ].map(([label, value]) => (
+                        <div>
+                          <dt class="font-inter text-[0.7rem] font-bold uppercase tracking-[0.14em] text-cuivre">{label}</dt>
+                          <dd class="mt-1.5 text-sm leading-relaxed text-graphite/80">{value}</dd>
+                        </div>
+                      ))}
+                    </dl>
+                  </li>
+                ))
+              }
+            </ul>
+
+            <p class={p}>
+              Passé ces délais, les données sont supprimées ou anonymisées, sauf obligation légale de les conserver
+              plus longtemps.
+            </p>
+          </section>
+
+          <!-- 4 -->
+          <section id="cookies" class={section} aria-labelledby="t-cookies">
+            <h2 id="t-cookies" class={h2}><span class={num}>04</span>Cookies et traceurs</h2>
+            <p class={p}>
+              Ce site n’utilise aucun cookie publicitaire, aucun outil de mesure d’audience et aucun traceur de suivi
+              de votre navigation. Aucun bandeau de consentement n’est donc nécessaire.
+            </p>
+            <p class={p}>
+              Si cela devait évoluer (par exemple avec l’ajout d’un outil de statistiques), cette politique serait
+              mise à jour et votre consentement serait recueilli avant tout dépôt de traceur non essentiel.
+            </p>
+          </section>
+
+          <!-- 5 -->
+          <section id="destinataires" class={section} aria-labelledby="t-destinataires">
+            <h2 id="t-destinataires" class={h2}><span class={num}>05</span>Destinataires et services tiers</h2>
+            <p class={p}>
+              Vos données ne sont ni vendues ni louées. Elles sont uniquement accessibles à moi-même et aux
+              prestataires techniques strictement nécessaires au fonctionnement du site :
+            </p>
+            <ul class={ul}>
+              <li>
+                <strong class="font-semibold text-encre">Hébergeur du site :</strong> {config.host}. Il traite les
+                journaux de connexion.
+              </li>
+              <li>
+                <strong class="font-semibold text-encre">Messagerie électronique :</strong> les messages que vous
+                m’envoyez sont reçus via ma boîte e-mail (Gmail, service de Google).
+              </li>
+              <li>
+                <strong class="font-semibold text-encre">Google Fonts :</strong> les polices Outfit et Inter sont
+                chargées depuis les serveurs de Google, ce qui transmet votre adresse IP à Google.
+              </li>
+            </ul>
+            <p class={p}>
+              Le site contient aussi des liens vers des plateformes externes (LinkedIn, GitHub, Behance). Une fois
+              sur ces sites, leurs propres politiques de confidentialité s’appliquent et je n’en suis pas responsable.
+            </p>
+          </section>
+
+          <!-- 6 -->
+          <section id="transferts" class={section} aria-labelledby="t-transferts">
+            <h2 id="t-transferts" class={h2}><span class={num}>06</span>Transferts hors Union européenne</h2>
+            <p class={p}>
+              Certains prestataires, notamment Google, peuvent traiter des données en dehors de l’Union européenne.
+              Ces transferts sont alors encadrés par les garanties prévues par le RGPD, telles qu’une décision
+              d’adéquation de la Commission européenne ou des clauses contractuelles types.
+            </p>
+          </section>
+
+          <!-- 7 -->
+          <section id="securite" class={section} aria-labelledby="t-securite">
+            <h2 id="t-securite" class={h2}><span class={num}>07</span>Sécurité des données</h2>
+            <p class={p}>
+              Je mets en œuvre des mesures raisonnables pour protéger vos données contre l’accès non autorisé, la
+              perte ou l’altération : connexion chiffrée au site (HTTPS), accès restreint à ma messagerie et
+              limitation des données collectées au strict nécessaire. Aucune méthode de transmission n’étant
+              infaillible, je ne peux toutefois garantir une sécurité absolue.
+            </p>
+          </section>
+
+          <!-- 8 -->
+          <section id="droits" class={section} aria-labelledby="t-droits">
+            <h2 id="t-droits" class={h2}><span class={num}>08</span>Vos droits</h2>
+            <p class={p}>Conformément au RGPD et à la loi Informatique et Libertés, vous disposez des droits suivants :</p>
+            <ul class={ul}>
+              {
+                rights.map(([name, text]) => (
+                  <li>
+                    <strong class="font-semibold text-encre">{name} :</strong>{" "}
+                    {text}
+                  </li>
+                ))
+              }
+              <li>
+                <strong class="font-semibold text-encre">Directives post-mortem :</strong> définir le sort de vos
+                données après votre décès.
+              </li>
+            </ul>
+
+            <p class={p}>
+              <strong class="font-semibold text-encre">Comment les exercer ?</strong> Écrivez-moi à
+              <a href={`mailto:${config.email}`} class={link}>{config.email}</a>. Il peut vous être demandé de justifier
+              de votre identité en cas de doute raisonnable. Je m’engage à répondre dans un délai d’un mois, prolongeable
+              de deux mois pour les demandes complexes ou nombreuses.
+            </p>
+
+            <p class={p}>
+              <strong class="font-semibold text-encre">Réclamation.</strong> Si vous estimez que vos droits ne sont pas
+              respectés, vous pouvez saisir la CNIL (Commission nationale de l’informatique et des libertés) :
+              <a href="https://www.cnil.fr/fr/plaintes" target="_blank" rel="noopener noreferrer" class={link}>cnil.fr/fr/plaintes</a>,
+              3 place de Fontenoy, TSA 80715, 75334 Paris Cedex 07.
+            </p>
+          </section>
+
+          <!-- 9 -->
+          <section id="modifications" class={section} aria-labelledby="t-modifications">
+            <h2 id="t-modifications" class={h2}><span class={num}>09</span>Modifications de la politique</h2>
+            <p class={p}>
+              Cette politique peut être mise à jour pour tenir compte d’évolutions du site ou de la réglementation. La
+              date de dernière mise à jour figure en haut de cette page : je vous invite à la consulter régulièrement.
+            </p>
+          </section>
+
+          <!-- 10 -->
+          <section id="contact" class={section} aria-labelledby="t-contact">
+            <h2 id="t-contact" class={h2}><span class={num}>10</span>Me contacter</h2>
+            <p class={p}>Une question sur cette politique ou sur vos données ? Écrivez-moi, je vous répondrai dès que possible.</p>
+            <a
+              href={`mailto:${config.email}`}
+              class="mt-6 inline-flex items-center gap-3 rounded-xl bg-soleil px-5 py-3 font-outfit text-sm font-bold text-encre transition duration-300 hover:-translate-y-0.5 hover:bg-miel focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-nuit"
+            >
+              {config.email}
+              <img src="/icons/black_contact.svg" alt="" width="18" height="18" class="h-[18px] w-[18px]" />
+            </a>
+            <p class="mt-8 text-sm text-graphite/60">
+              Voir aussi les <a href="/mentions-legales" class={link}>mentions légales</a>.
+            </p>
+          </section>
+        </div>
+      </article>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  // Sommaire : section lue en surbrillance + fil de progression jusqu'à l'hexagone actif.
+  const links = Array.from(document.querySelectorAll<HTMLAnchorElement>(".toc-link"));
+  const fill = document.getElementById("toc-fill");
+  const sections = links
+    .map((a) => document.getElementById(a.getAttribute("href")!.slice(1)))
+    .filter((el): el is HTMLElement => el !== null);
+
+  const center = (el: Element) => {
+    const r = el.getBoundingClientRect();
+    return r.top + r.height / 2;
+  };
+
+  const updateFill = () => {
+    if (!fill) return;
+    const markers = links.map((a) => a.querySelector("[data-marker]")).filter((m): m is Element => m !== null);
+    const activeIndex = links.findIndex((a) => a.getAttribute("aria-current") === "true");
+    if (!markers.length || activeIndex < 0) return;
+    fill.style.setProperty("--p", `${Math.max(0, center(markers[activeIndex]) - center(markers[0]))}px`);
+  };
+
+  if (sections.length && "IntersectionObserver" in window) {
+    const setActive = (id: string) => {
+      links.forEach((a) => a.setAttribute("aria-current", String(a.getAttribute("href") === `#${id}`)));
+      updateFill();
+    };
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+        if (visible[0]) setActive(visible[0].target.id);
+      },
+      { rootMargin: "-15% 0px -70% 0px" },
+    );
+
+    sections.forEach((s) => observer.observe(s));
+    setActive(sections[0].id);
+    window.addEventListener("resize", updateFill);
+  }
+</script>
